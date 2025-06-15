@@ -32,8 +32,12 @@ const MASTER_SCHEMAS: Record<string, { label: string; columns: string[] }> = {
   }
 };
 
-export default function ImportDataModalContent() {
-  const [master, setMaster] = useState<keyof typeof MASTER_SCHEMAS>("exams");
+interface ImportDataModalContentProps {
+  initialMaster?: keyof typeof MASTER_SCHEMAS;
+}
+
+export default function ImportDataModalContent({ initialMaster = "exams" }: ImportDataModalContentProps) {
+  const [master, setMaster] = useState<keyof typeof MASTER_SCHEMAS>(initialMaster);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +48,6 @@ export default function ImportDataModalContent() {
 
   const handleImport = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulación de importación
     alert("Funcionalidad de importación simulada para: " + MASTER_SCHEMAS[master].label);
   };
 
