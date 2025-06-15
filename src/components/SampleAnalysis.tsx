@@ -376,8 +376,7 @@ export function SampleAnalysis() {
                         <Input 
                           id="equipmentCost"
                           type="number"
-                          size="sm"
-                          value={analysisData.equipmentCost.toString()}
+                          value={analysisData.equipmentCost}
                           onChange={(e) => handleInputChange('equipmentCost', Number(e.target.value) || 0)}
                         />
                       </div>
@@ -386,8 +385,7 @@ export function SampleAnalysis() {
                         <Input 
                           id="reagentCost"
                           type="number"
-                          size="sm"
-                          value={analysisData.reagentCost.toString()}
+                          value={analysisData.reagentCost}
                           onChange={(e) => handleInputChange('reagentCost', Number(e.target.value) || 0)}
                         />
                       </div>
@@ -396,8 +394,7 @@ export function SampleAnalysis() {
                         <Input 
                           id="laborCost"
                           type="number"
-                          size="sm"
-                          value={analysisData.laborCost.toString()}
+                          value={analysisData.laborCost}
                           onChange={(e) => handleInputChange('laborCost', Number(e.target.value) || 0)}
                         />
                       </div>
