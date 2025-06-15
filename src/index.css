@@ -90,6 +90,38 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  .corporate {
+    --background: 219 98% 96%;              /* Azul muy claro */
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 219 94% 98%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 219 98% 96%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 219 80% 60%;                 /* Azul corporativo */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 211 70% 90%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 215 37% 87%;
+    --input: 215 37% 87%;
+    --ring: 219 80% 60%;
+
+    --radius: 0.5rem;
+  }
 }
 
 @layer base {

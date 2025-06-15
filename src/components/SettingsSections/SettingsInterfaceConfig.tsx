@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -8,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Palette, Moon, SunMedium, Image as ImageIcon } from "lucide-react";
+import { useTheme } from "@/hooks/use-theme";
 
 const LANGUAGES = [
   { value: "es", label: "Español" },
@@ -22,11 +22,11 @@ const THEMES = [
 
 export default function SettingsInterfaceConfig() {
   const [language, setLanguage] = useState("es");
-  const [theme, setTheme] = useState("light");
   const [labName, setLabName] = useState("LabClínico");
   const [logo, setLogo] = useState<string | null>(null);
   const logoInputRef = useRef<HTMLInputElement | null>(null);
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
 
   // Maneja carga y preview del logo
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,7 +135,7 @@ export default function SettingsInterfaceConfig() {
             <ToggleGroup
               type="single"
               value={theme}
-              onValueChange={val => val && setTheme(val)}
+              onValueChange={val => val && setTheme(val as "light" | "dark" | "corporate")}
               className="mt-2"
             >
               {THEMES.map((t) => (
