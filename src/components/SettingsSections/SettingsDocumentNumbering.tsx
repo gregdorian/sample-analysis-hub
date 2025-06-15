@@ -1,11 +1,10 @@
-
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Reset, ListRestart } from "lucide-react";
+import { ListRestart, RotateCcw } from "lucide-react";
 
 export default function SettingsDocumentNumbering() {
   // Estado local simulado (en una app real este valor vendría del servidor)
@@ -90,7 +89,7 @@ export default function SettingsDocumentNumbering() {
               variant="secondary"
               className="gap-2"
             >
-              <Reset className="h-4 w-4" />
+              <RotateCcw className="h-4 w-4" />
               Establecer
             </Button>
           </form>
