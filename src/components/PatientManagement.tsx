@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -200,74 +199,6 @@ export function PatientManagement() {
     patient.historiaClinica.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // --- IMPORTAR CSV ---
-  const handleCsvFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCsvError(null);
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setCsvImporting(true);
-    const reader = new FileReader();
-    reader.onload = (ev: ProgressEvent<FileReader>) => {
-      const text = ev.target?.result as string;
-      try {
-        const patientsFromCsv = parseCsv(text);
-        if (patientsFromCsv.length === 0) throw new Error("CSV vacío o cabezales incorrectos.");
-        // Unir evitando duplicados por nroIdentificacion
-        setPatients((prev) => {
-          const existingIDs = new Set(prev.map((p) => p.nroIdentificacion));
-          const filtered = patientsFromCsv.filter(p => !existingIDs.has(p.nroIdentificacion));
-          return [...prev, ...filtered];
-        });
-        toast({ title: "Pacientes importados por CSV", description: `Se importaron ${patientsFromCsv.length} pacientes.` });
-        setImportDialogOpen(false);
-      } catch (err: any) {
-        setCsvError("Error al parsear CSV. Revise el formato.");
-      } finally {
-        setCsvImporting(false);
-      }
-    };
-    reader.readAsText(file);
-  };
-
-  // --- IMPORTAR DESDE API (fake/simulado) ---
-  const handleImportFromAPI = async () => {
-    setImportFromApiLoading(true);
-    setTimeout(() => {
-      const apiPatients: Patient[] = [
-        {
-          id: Date.now(),
-          nroIdentificacion: "22223333",
-          nombre: "Julio",
-          apellido: "Farfán",
-          historiaClinica: "HC999",
-          sexo: "M",
-          fechaNacimiento: "1990-02-01",
-          telefono: "555-1000",
-          email: "julio.farfan@ejemplo.com"
-        },
-        {
-          id: Date.now() + 1,
-          nroIdentificacion: "44445555",
-          nombre: "Lucía",
-          apellido: "Ramos",
-          historiaClinica: "HC200",
-          sexo: "F",
-          fechaNacimiento: "1988-12-12",
-          telefono: "555-2000",
-          email: "lucia.ramos@ejemplo.com"
-        }
-      ];
-      setPatients((prev) => {
-        const existingIDs = new Set(prev.map((p) => p.nroIdentificacion));
-        const filtered = apiPatients.filter(p => !existingIDs.has(p.nroIdentificacion));
-        return [...prev, ...filtered];
-      });
-      toast({ title: "Pacientes importados por API", description: `Se importaron ${apiPatients.length} pacientes.` });
-      setImportDialogOpen(false);
-      setImportFromApiLoading(false);
-    }, 1200);
-  };
-
   // --- DIALOG: FORM PARA AGREGAR/EDITAR PACIENTE ---
   const PatientFormDialog = (
     <Dialog open={addDialogOpen || editDialogOpen} onOpenChange={open => { setAddDialogOpen(open); setEditDialogOpen(open ? true : false); }}>
@@ -371,43 +302,6 @@ export function PatientManagement() {
     </Dialog>
   );
 
-  // --- DIALOG: IMPORTACION ---
-  const ImportDialog = (
-    <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Importar Pacientes</DialogTitle>
-          <DialogDescription>
-            Puede importar desde un archivo CSV o desde una API externa.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col gap-4">
-          <div>
-            <Label>Importar archivo CSV:</Label>
-            <Input
-              type="file"
-              accept=".csv"
-              ref={fileInputRef}
-              disabled={csvImporting}
-              onChange={handleCsvFile}
-              className="mt-1"
-            />
-            {csvError && <div className="text-destructive text-sm mt-1">{csvError}</div>}
-            <p className="text-xs text-muted-foreground mt-1">Encabezados: nroIdentificacion,nombre,apellido,historiaClinica,sexo,fechaNacimiento,telefono,email</p>
-          </div>
-          <div>
-            <Label>Importar desde API:</Label>
-            <Button disabled={importFromApiLoading} className="mt-1" onClick={handleImportFromAPI}>
-              <Database className="h-4 w-4 mr-2" />
-              {importFromApiLoading ? "Importando..." : "Importar desde API"}
-            </Button>
-            <span className="text-xs text-muted-foreground block mt-1">Simulado para demo (no consume una API real).</span>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-
   // --- DIALOG DE ELIMINACIÓN (ALERTA) ---
   const DeleteAlert = (
     <AlertDialog open={!!deletingPatient} onOpenChange={open => !open && setDeletingPatient(null)}>
@@ -436,10 +330,6 @@ export function PatientManagement() {
           <p className="text-slate-600">Registro y administración de pacientes</p>
         </div>
         <div className="flex gap-2">
-          <Button className="bg-green-700 hover:bg-green-800" onClick={() => setImportDialogOpen(true)}>
-            <Import className="h-4 w-4 mr-2" />
-            Importar
-          </Button>
           <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => { setEditingPatient(null); setAddDialogOpen(true); }}>
             <Plus className="h-4 w-4 mr-2" />
             Nuevo Paciente
@@ -514,7 +404,6 @@ export function PatientManagement() {
 
       {/* DIALOGS */}
       {PatientFormDialog}
-      {ImportDialog}
       {DeleteAlert}
     </div>
   );

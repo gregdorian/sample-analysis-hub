@@ -1,4 +1,3 @@
-
 import { 
   Activity, 
   Users, 
@@ -52,6 +51,11 @@ const menuItems = [
     title: "Facturación",
     icon: CreditCard,
     key: "billing",
+  },
+  {
+    title: "Configuración",
+    icon: Settings,
+    key: "settings",
   },
 ];
 

@@ -8,6 +8,7 @@ import { SampleReception } from "@/components/SampleReception";
 import { SampleAnalysis } from "@/components/SampleAnalysis";
 import { Reports } from "@/components/Reports";
 import { Billing } from "@/components/Billing";
+import { SettingsImportModule } from "@/components/SettingsImportModule";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -26,6 +27,8 @@ const Index = () => {
         return <Reports />;
       case "billing":
         return <Billing />;
+      case "settings":
+        return <SettingsImportModule />;
       default:
         return <DashboardContent />;
     }
