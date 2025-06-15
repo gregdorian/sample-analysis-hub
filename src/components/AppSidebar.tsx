@@ -1,3 +1,4 @@
+
 import { 
   Activity, 
   Users, 
@@ -6,7 +7,14 @@ import {
   FileText, 
   CreditCard,
   BarChart3,
-  Settings
+  Settings,
+  DatabaseImport,
+  ClipboardList,
+  UserPlus,
+  Building2,
+  Layers3,
+  FlaskConical,
+  AlarmClock
 } from "lucide-react";
 import {
   Sidebar,
@@ -21,7 +29,13 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 
-const menuItems = [
+interface AppSidebarProps {
+  activeSection: string;
+  onSectionChange: (section: string) => void;
+  onMastersMenu: (key: string) => void;
+}
+
+const mainMenuItems = [
   {
     title: "Dashboard",
     icon: BarChart3,
@@ -51,20 +65,48 @@ const menuItems = [
     title: "Facturación",
     icon: CreditCard,
     key: "billing",
-  },
-  {
-    title: "Configuración",
-    icon: Settings,
-    key: "settings",
-  },
+  }
 ];
 
-interface AppSidebarProps {
-  activeSection: string;
-  onSectionChange: (section: string) => void;
-}
+const mastersMenu = [
+  {
+    label: "Exámenes",
+    icon: ClipboardList,
+    key: "masters-exams"
+  },
+  {
+    label: "Médicos",
+    icon: UserPlus,
+    key: "masters-doctors"
+  },
+  {
+    label: "Aseguradoras",
+    icon: Building2,
+    key: "masters-insurers"
+  },
+  {
+    label: "Áreas",
+    icon: Layers3,
+    key: "masters-areas"
+  },
+  {
+    label: "Tipos de muestra",
+    icon: FlaskConical,
+    key: "masters-sampletypes"
+  },
+  {
+    label: "Prioridad",
+    icon: AlarmClock,
+    key: "masters-priorities"
+  },
+  {
+    label: "Importar",
+    icon: DatabaseImport,
+    key: "masters-import"
+  }
+];
 
-export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) {
+export function AppSidebar({ activeSection, onSectionChange, onMastersMenu }: AppSidebarProps) {
   return (
     <Sidebar className="border-r border-slate-200">
       <SidebarHeader>
@@ -82,7 +124,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
           <SidebarGroupLabel>Módulos Principales</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {mainMenuItems.map((item) => (
                 <SidebarMenuItem key={item.key}>
                   <SidebarMenuButton 
                     asChild
@@ -101,16 +143,42 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Maestros</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {mastersMenu.map((item) => (
+                <SidebarMenuItem key={item.key}>
+                  <SidebarMenuButton 
+                    asChild
+                    isActive={false}
+                  >
+                    <button 
+                      onClick={() => onMastersMenu(item.key)}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100"
+                        type="button"
+                    >
+                      <item.icon className="h-5 w-5" />
+                      <span>{item.label}</span>
+                    </button>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter>
         <div className="px-4 py-2">
           <button className="flex items-center gap-2 text-slate-600 hover:text-slate-800">
             <Settings className="h-4 w-4" />
-            <span className="text-sm">Configuración</span>
+            <span className="text-sm">Configuración General</span>
           </button>
         </div>
       </SidebarFooter>
     </Sidebar>
   );
 }
+
