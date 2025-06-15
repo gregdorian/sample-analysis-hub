@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TestTube, Search, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ExamItemTable, ExamItem } from "./ExamItemTable";
 
 interface Sample {
   id: string;
@@ -26,83 +27,128 @@ interface SampleReceptionFormProps {
   samplesCount: number;
 }
 
+const emptyExamForm: Omit<ExamItem, 'id'> = {
+  examType: "",
+  sampleType: "",
+  area: "",
+  priority: ""
+};
+
 export function SampleReceptionForm({ onAddSample, samplesCount }: SampleReceptionFormProps) {
   const { toast } = useToast();
 
-  // Estados para los campos del formulario
+  // Estado de paciente
   const [patientSearch, setPatientSearch] = useState("");
-  const [orderNumber, setOrderNumber] = useState("");
-  const [examType, setExamType] = useState("");
-  const [sampleType, setSampleType] = useState("");
-  const [area, setArea] = useState("");
-  const [priority, setPriority] = useState("");
+  // Examenes agregados (detalle)
+  const [examItems, setExamItems] = useState<ExamItem[]>([]);
+  // Estado para manejar el formulario de un examen
+  const [examForm, setExamForm] = useState<Omit<ExamItem, 'id'>>(emptyExamForm);
+  const [editingExamId, setEditingExamId] = useState<string | null>(null);
 
-  // Validar campos requeridos
-  const isFormValid = () => {
-    console.log("Validando formulario:", {
-      patientSearch: patientSearch.trim(),
-      orderNumber: orderNumber.trim(),
-      examType: examType.trim(),
-      sampleType: sampleType.trim(),
-      area: area.trim(),
-      priority: priority.trim()
-    });
+  // Generar número de orden automáticamente
+  const orderNumber = `ORD${String(samplesCount + 1).padStart(3, "0")}`;
 
-    return (
-      patientSearch.trim() !== "" &&
-      orderNumber.trim() !== "" &&
-      examType.trim() !== "" &&
-      sampleType.trim() !== "" &&
-      area.trim() !== "" &&
-      priority.trim() !== ""
-    );
+  // Validaciones
+  const canAddExam = examForm.examType && examForm.sampleType && examForm.area && examForm.priority;
+  const canRegisterSample = (
+    patientSearch.trim() !== "" &&
+    examItems.length > 0
+  );
+
+  // Manejar agregar/examinar un examen detalle
+  const handleAddExam = () => {
+    if (!canAddExam) {
+      toast({
+        title: "Campos del examen incompletos",
+        description: "Complete todos los campos para agregar el examen.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (editingExamId) {
+      // Modificando un examen existente
+      setExamItems((prev) =>
+        prev.map((item) =>
+          item.id === editingExamId ? { ...item, ...examForm } : item
+        )
+      );
+      setEditingExamId(null);
+      toast({ title: "Examen modificado", variant: "default" });
+    } else {
+      // Agregando un nuevo examen
+      setExamItems((prev) => [
+        ...prev,
+        { ...examForm, id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}` }
+      ]);
+      toast({ title: "Examen agregado", variant: "default" });
+    }
+
+    setExamForm(emptyExamForm);
   };
 
-  const handleFormRegisterSample = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    console.log("Intentando registrar muestra...");
-    console.log("Formulario válido:", isFormValid());
+  // Editar
+  const handleEditExam = (item: ExamItem) => {
+    setExamForm({
+      examType: item.examType,
+      sampleType: item.sampleType,
+      area: item.area,
+      priority: item.priority,
+    });
+    setEditingExamId(item.id);
+  };
 
-    if (!isFormValid()) {
+  // Quitar
+  const handleRemoveExam = (id: string) => {
+    setExamItems((prev) => prev.filter((item) => item.id !== id));
+    // Al quitar exam, limpiar edición si estaba editando ese
+    if (editingExamId === id) {
+      setExamForm(emptyExamForm);
+      setEditingExamId(null);
+    }
+    toast({ title: "Examen eliminado", variant: "destructive" });
+  };
+
+  // Registrar muestra
+  const handleRegisterSample = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!canRegisterSample) {
       toast({
-        title: "Campos incompletos",
-        description: "Por favor, complete todos los campos obligatorios para registrar la muestra.",
+        title: "Formulario incompleto",
+        description: "Ingrese paciente y al menos un examen.",
         variant: "destructive",
       });
       return;
     }
 
-    const newSample: Sample = {
-      id: `M${String(samplesCount + 1).padStart(3, '0')}`,
-      patientName: patientSearch,
-      patientId: "---",
-      orderNumber,
-      examType,
-      sampleType,
-      area,
-      priority,
-      receptionDate: new Date().toISOString().split('T')[0],
-      status: "Recibida",
-    };
-
-    console.log("Registrando nueva muestra:", newSample);
-
-    onAddSample(newSample);
+    // Registrar por cada examen como una muestra
+    examItems.forEach((item) => {
+      const newSample: Sample = {
+        id: `M${String(samplesCount + 1).padStart(3, '0')}`,
+        patientName: patientSearch,
+        patientId: "---",
+        orderNumber,
+        examType: item.examType,
+        sampleType: item.sampleType,
+        area: item.area,
+        priority: item.priority,
+        receptionDate: new Date().toISOString().split('T')[0],
+        status: "Recibida",
+      };
+      onAddSample(newSample);
+    });
 
     toast({
       title: "Muestra registrada",
-      description: `Muestra ${newSample.id} registrada exitosamente.`,
+      description: `Se registró la muestra con ${examItems.length} examen(es) para el paciente.`,
       variant: "default",
     });
 
-    // Limpiar el formulario
+    // Limpiar formulario
     setPatientSearch("");
-    setOrderNumber("");
-    setExamType("");
-    setSampleType("");
-    setArea("");
-    setPriority("");
+    setExamItems([]);
+    setExamForm(emptyExamForm);
+    setEditingExamId(null);
   };
 
   return (
@@ -112,11 +158,11 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
           <TestTube className="h-5 w-5 text-blue-600" />
           Formulario de Recepción
         </CardTitle>
-        <CardDescription>Complete la información de la muestra recibida</CardDescription>
+        <CardDescription>Complete la información y agregue exámenes a realizar</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleFormRegisterSample}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <form onSubmit={handleRegisterSample}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="patient-search">Buscar Paciente *</Label>
               <div className="relative">
@@ -131,21 +177,25 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
                 />
               </div>
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="order-number">Número de Orden *</Label>
               <Input
                 id="order-number"
-                placeholder="ORD001"
                 value={orderNumber}
-                onChange={(e) => setOrderNumber(e.target.value)}
-                required
+                readOnly
+                className="bg-slate-100 text-slate-500"
               />
             </div>
+          </div>
+
+          {/* --- Formulario de examen detalle (maestro-detalle) --- */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
             <div className="space-y-2">
               <Label htmlFor="exam-type">Tipo de Examen *</Label>
               <Select
-                value={examType}
-                onValueChange={setExamType}
+                value={examForm.examType}
+                onValueChange={(val) => setExamForm((f) => ({ ...f, examType: val }))}
                 required
               >
                 <SelectTrigger>
@@ -163,8 +213,8 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
             <div className="space-y-2">
               <Label htmlFor="sample-type">Tipo de Muestra *</Label>
               <Select
-                value={sampleType}
-                onValueChange={setSampleType}
+                value={examForm.sampleType}
+                onValueChange={(val) => setExamForm((f) => ({ ...f, sampleType: val }))}
                 required
               >
                 <SelectTrigger>
@@ -181,8 +231,8 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
             <div className="space-y-2">
               <Label htmlFor="area">Área Asignada *</Label>
               <Select
-                value={area}
-                onValueChange={setArea}
+                value={examForm.area}
+                onValueChange={(val) => setExamForm((f) => ({ ...f, area: val }))}
                 required
               >
                 <SelectTrigger>
@@ -199,8 +249,8 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
             <div className="space-y-2">
               <Label htmlFor="priority">Prioridad *</Label>
               <Select
-                value={priority}
-                onValueChange={setPriority}
+                value={examForm.priority}
+                onValueChange={(val) => setExamForm((f) => ({ ...f, priority: val }))}
                 required
               >
                 <SelectTrigger>
@@ -214,11 +264,42 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
               </Select>
             </div>
           </div>
+          <div className="flex gap-2 mt-2">
+            <Button
+              type="button"
+              variant={editingExamId ? "secondary" : "default"}
+              onClick={handleAddExam}
+              className="mt-2"
+            >
+              {editingExamId ? "Actualizar examen" : "Agregar examen"}
+            </Button>
+            {editingExamId && (
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-2"
+                onClick={() => {
+                  setEditingExamId(null);
+                  setExamForm(emptyExamForm);
+                }}
+              >
+                Cancelar edición
+              </Button>
+            )}
+          </div>
+
+          {/* Tabla de examenes agregados */}
+          <ExamItemTable
+            items={examItems}
+            onEdit={handleEditExam}
+            onRemove={handleRemoveExam}
+          />
+
           <div className="flex justify-end mt-6">
-            <Button 
-              className="bg-blue-600 hover:bg-blue-700" 
+            <Button
+              className="bg-blue-600 hover:bg-blue-700"
               type="submit"
-              disabled={!isFormValid()}
+              disabled={!canRegisterSample}
             >
               <CheckCircle className="h-4 w-4 mr-2" />
               Registrar Muestra
@@ -229,3 +310,4 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
     </Card>
   );
 }
+
