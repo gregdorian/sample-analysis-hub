@@ -28,6 +28,7 @@ import {
   SidebarHeader,
   SidebarFooter,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   Collapsible,
@@ -121,6 +122,7 @@ const mastersMenu = [
 export function AppSidebar({ activeSection, onSectionChange, onMastersMenu }: AppSidebarProps) {
   const [mainModulesOpen, setMainModulesOpen] = useState(true);
   const [mastersOpen, setMastersOpen] = useState(true);
+  const { state } = useSidebar();
 
   const handleMastersClick = (key: string) => {
     if (key === "config-general") {
@@ -131,94 +133,102 @@ export function AppSidebar({ activeSection, onSectionChange, onMastersMenu }: Ap
   };
 
   return (
-    <Sidebar className="border-r border-slate-200">
-      <SidebarHeader>
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-2">
-            <Activity className="h-8 w-8 text-blue-600" />
-            <div>
-              <h1 className="text-xl font-bold text-slate-800">LabClínico</h1>
-              <p className="text-sm text-slate-600">Sistema de Gestión</p>
+    <div className="relative h-full">
+      <Sidebar className="border-r border-slate-200">
+        <SidebarHeader>
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-2">
+              <Activity className="h-8 w-8 text-blue-600" />
+              <div>
+                <h1 className="text-xl font-bold text-slate-800">LabClínico</h1>
+                <p className="text-sm text-slate-600">Sistema de Gestión</p>
+              </div>
+            </div>
+            <div className="p-1">
+              <SidebarTrigger className="h-8 w-8" />
             </div>
           </div>
-          <div className="p-1">
-            <SidebarTrigger className="h-8 w-8" />
-          </div>
+        </SidebarHeader>
+        
+        <SidebarContent>
+          <SidebarGroup>
+            <Collapsible open={mainModulesOpen} onOpenChange={setMainModulesOpen}>
+              <CollapsibleTrigger asChild>
+                <SidebarGroupLabel className="flex items-center justify-between cursor-pointer hover:bg-slate-100 rounded-md p-2">
+                  Módulos Principales
+                  <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${mainModulesOpen ? 'rotate-180' : ''}`} />
+                </SidebarGroupLabel>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {mainMenuItems.map((item) => (
+                      <SidebarMenuItem key={item.key}>
+                        <SidebarMenuButton 
+                          asChild
+                          isActive={activeSection === item.key}
+                        >
+                          <button 
+                            onClick={() => onSectionChange(item.key)}
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 data-[active=true]:bg-blue-100 data-[active=true]:text-blue-700"
+                          >
+                            <item.icon className="h-5 w-5" />
+                            <span>{item.title}</span>
+                          </button>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </CollapsibleContent>
+            </Collapsible>
+          </SidebarGroup>
+
+          <SidebarGroup>
+            <Collapsible open={mastersOpen} onOpenChange={setMastersOpen}>
+              <CollapsibleTrigger asChild>
+                <SidebarGroupLabel className="flex items-center justify-between cursor-pointer hover:bg-slate-100 rounded-md p-2">
+                  Maestros
+                  <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${mastersOpen ? 'rotate-180' : ''}`} />
+                </SidebarGroupLabel>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {mastersMenu.map((item) => (
+                      <SidebarMenuItem key={item.key}>
+                        <SidebarMenuButton 
+                          asChild
+                          isActive={activeSection === item.key}
+                        >
+                          <button 
+                            onClick={() => handleMastersClick(item.key)}
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 data-[active=true]:bg-blue-100 data-[active=true]:text-blue-700"
+                            type="button"
+                          >
+                            <item.icon className="h-5 w-5" />
+                            <span>{item.label}</span>
+                          </button>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </CollapsibleContent>
+            </Collapsible>
+          </SidebarGroup>
+        </SidebarContent>
+
+        <SidebarFooter>
+          {/* Footer vacío - configuración movida a maestros */}
+        </SidebarFooter>
+      </Sidebar>
+      {/* Botón para restaurar flotante cuando el Sidebar está colapsado (desktop) */}
+      {state === "collapsed" && (
+        <div className="fixed top-4 left-2 z-50 md:block hidden">
+          <SidebarTrigger className="shadow-lg border bg-white hover:bg-slate-100" />
         </div>
-      </SidebarHeader>
-      
-      <SidebarContent>
-        <SidebarGroup>
-          <Collapsible open={mainModulesOpen} onOpenChange={setMainModulesOpen}>
-            <CollapsibleTrigger asChild>
-              <SidebarGroupLabel className="flex items-center justify-between cursor-pointer hover:bg-slate-100 rounded-md p-2">
-                Módulos Principales
-                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${mainModulesOpen ? 'rotate-180' : ''}`} />
-              </SidebarGroupLabel>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {mainMenuItems.map((item) => (
-                    <SidebarMenuItem key={item.key}>
-                      <SidebarMenuButton 
-                        asChild
-                        isActive={activeSection === item.key}
-                      >
-                        <button 
-                          onClick={() => onSectionChange(item.key)}
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 data-[active=true]:bg-blue-100 data-[active=true]:text-blue-700"
-                        >
-                          <item.icon className="h-5 w-5" />
-                          <span>{item.title}</span>
-                        </button>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </Collapsible>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <Collapsible open={mastersOpen} onOpenChange={setMastersOpen}>
-            <CollapsibleTrigger asChild>
-              <SidebarGroupLabel className="flex items-center justify-between cursor-pointer hover:bg-slate-100 rounded-md p-2">
-                Maestros
-                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${mastersOpen ? 'rotate-180' : ''}`} />
-              </SidebarGroupLabel>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {mastersMenu.map((item) => (
-                    <SidebarMenuItem key={item.key}>
-                      <SidebarMenuButton 
-                        asChild
-                        isActive={activeSection === item.key}
-                      >
-                        <button 
-                          onClick={() => handleMastersClick(item.key)}
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 data-[active=true]:bg-blue-100 data-[active=true]:text-blue-700"
-                          type="button"
-                        >
-                          <item.icon className="h-5 w-5" />
-                          <span>{item.label}</span>
-                        </button>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </Collapsible>
-        </SidebarGroup>
-      </SidebarContent>
-
-      <SidebarFooter>
-        {/* Footer vacío - configuración movida a maestros */}
-      </SidebarFooter>
-    </Sidebar>
+      )}
+    </div>
   );
 }
