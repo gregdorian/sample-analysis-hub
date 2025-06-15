@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -352,8 +351,8 @@ export function SampleAnalysis() {
                         id="duration" 
                         type="number"
                         placeholder="30"
-                        value={analysisData.duration}
-                        onChange={(e) => handleInputChange('duration', Number(e.target.value))}
+                        value={analysisData.duration.toString()}
+                        onChange={(e) => handleInputChange('duration', Number(e.target.value) || 0)}
                       />
                     </div>
                     <div>
@@ -361,7 +360,7 @@ export function SampleAnalysis() {
                       <Input 
                         id="totalCost" 
                         type="number"
-                        value={calculateTotalCost()}
+                        value={calculateTotalCost().toString()}
                         readOnly
                         className="bg-slate-100"
                       />
@@ -378,7 +377,7 @@ export function SampleAnalysis() {
                           id="equipmentCost"
                           type="number"
                           size="sm"
-                          value={analysisData.equipmentCost}
+                          value={analysisData.equipmentCost.toString()}
                           onChange={(e) => handleInputChange('equipmentCost', Number(e.target.value) || 0)}
                         />
                       </div>
@@ -388,7 +387,7 @@ export function SampleAnalysis() {
                           id="reagentCost"
                           type="number"
                           size="sm"
-                          value={analysisData.reagentCost}
+                          value={analysisData.reagentCost.toString()}
                           onChange={(e) => handleInputChange('reagentCost', Number(e.target.value) || 0)}
                         />
                       </div>
@@ -398,7 +397,7 @@ export function SampleAnalysis() {
                           id="laborCost"
                           type="number"
                           size="sm"
-                          value={analysisData.laborCost}
+                          value={analysisData.laborCost.toString()}
                           onChange={(e) => handleInputChange('laborCost', Number(e.target.value) || 0)}
                         />
                       </div>
