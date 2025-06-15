@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import SettingsExams from "./SettingsMasters/SettingsExams";
@@ -7,6 +6,7 @@ import SettingsInsurers from "./SettingsMasters/SettingsInsurers";
 import SettingsAreas from "./SettingsMasters/SettingsAreas";
 import SettingsSampleTypes from "./SettingsMasters/SettingsSampleTypes";
 import SettingsPriorities from "./SettingsMasters/SettingsPriorities";
+import ImportDataModalContent from "./ImportDataModalContent";
 
 // Placeholder de importador, puedes reemplazar por un componente real de importación si existe
 function ImportModalContent() {
@@ -96,9 +96,9 @@ export default function MastersModals({ open, onClose }: MastersModalsProps) {
       <Dialog open={open === "masters-import"} onOpenChange={onClose}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Importar</DialogTitle>
+            <DialogTitle>Importar datos</DialogTitle>
           </DialogHeader>
-          <ImportModalContent />
+          <ImportDataModalContent />
           <DialogClose asChild>
             <button className="mt-4 btn btn-outline">Cerrar</button>
           </DialogClose>
