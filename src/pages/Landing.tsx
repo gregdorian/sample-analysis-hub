@@ -1,8 +1,10 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function Landing() {
+  const navigate = useNavigate();
   return (
     <div className="bg-white dark:bg-background min-h-screen flex flex-col">
       {/* Header */}
@@ -16,8 +18,9 @@ export default function Landing() {
           <Button
             size="sm"
             className="bg-green-700 hover:bg-green-800 text-white rounded-full"
+            onClick={() => navigate("/login")}
           >
-            Probar demo
+            Ingresar
           </Button>
         </div>
       </header>
@@ -30,8 +33,8 @@ export default function Landing() {
           Transformando el caos en claridad: <span className="text-green-700">Tu camino hacia la excelencia en el laboratorio</span>
         </h1>
         <p className="text-lg text-gray-700 dark:text-gray-200 mb-3 max-w-3xl mx-auto">
-          Nuestra plataforma web para Laboratorios Clínicos automatiza y optimiza todos los procesos críticos, desde el ingreso del paciente y la toma de muestras, hasta el análisis, la validación de resultados y la entrega de informes. <br/><br/>
-          Con <b>G-mint</b>, su laboratorio puede reducir significativamente los tiempos de respuesta, minimizar errores manuales y mejorar la calidad del servicio ofrecido a pacientes y médicos referentes. <br/><br/>
+          Nuestra plataforma web para Laboratorios Clínicos automatiza y optimiza todos los procesos críticos, desde el ingreso del paciente y la toma de muestras, hasta el análisis, la validación de resultados y la entrega de informes.<br /><br />
+          Con <b>G-mint</b>, su laboratorio puede reducir significativamente los tiempos de respuesta, minimizar errores manuales y mejorar la calidad del servicio ofrecido a pacientes y médicos referentes.<br /><br />
           La interfaz es intuitiva y personalizable, adaptándose a las necesidades específicas de su laboratorio.
         </p>
       </section>
@@ -194,7 +197,7 @@ export default function Landing() {
             <li>Almacenamiento seguro en la nube</li>
           </ul>
           <div className="text-center mt-5">
-            <Button className="bg-green-700 hover:bg-green-800 text-white rounded-full px-10" size="lg">
+            <Button className="bg-green-700 hover:bg-green-800 text-white rounded-full px-10" size="lg" onClick={() => navigate("/login")}>
               Cotizar Ahora
             </Button>
           </div>
