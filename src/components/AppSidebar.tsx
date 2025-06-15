@@ -1,4 +1,3 @@
-
 import { 
   Activity, 
   Users, 
@@ -115,7 +114,7 @@ const mastersMenu = [
   {
     label: "Configuración General",
     icon: Settings,
-    key: "config"
+    key: "config-general"
   }
 ];
 
@@ -124,8 +123,8 @@ export function AppSidebar({ activeSection, onSectionChange, onMastersMenu }: Ap
   const [mastersOpen, setMastersOpen] = useState(true);
 
   const handleMastersClick = (key: string) => {
-    if (key === "config") {
-      onSectionChange("config");
+    if (key === "config-general") {
+      onSectionChange("config-general");
     } else {
       onMastersMenu(key);
     }

@@ -28,7 +28,7 @@ const Index = () => {
         return <Reports />;
       case "billing":
         return <Billing />;
-      case "config":
+      case "config-general":
         return <SettingsTabs />;
       default:
         return <DashboardContent />;
