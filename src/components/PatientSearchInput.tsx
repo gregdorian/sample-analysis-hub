@@ -6,11 +6,14 @@ import { Search } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
+// Ampliar el modelo para incluir aseguradora y médico
 interface Patient {
   id: number;
   nroIdentificacion: string;
   nombre: string;
   apellido: string;
+  aseguradora: string;
+  medico: string;
 }
 
 interface PatientSearchInputProps {
@@ -18,27 +21,52 @@ interface PatientSearchInputProps {
   onPatientSelected: (patient: Patient | null) => void;
 }
 
+// Pacientes de ejemplo ampliados
 const PATIENTS: Patient[] = [
-  { id: 1, nroIdentificacion: "12345678", nombre: "María", apellido: "García" },
-  { id: 2, nroIdentificacion: "87654321", nombre: "Carlos", apellido: "López" },
-  { id: 3, nroIdentificacion: "11223344", nombre: "Ana", apellido: "Martínez" },
+  {
+    id: 1,
+    nroIdentificacion: "12345678",
+    nombre: "María",
+    apellido: "García",
+    aseguradora: "Rimac",
+    medico: "Dr. Juan Pérez"
+  },
+  {
+    id: 2,
+    nroIdentificacion: "87654321",
+    nombre: "Carlos",
+    apellido: "López",
+    aseguradora: "Pacífico",
+    medico: "Dra. Laura Díaz"
+  },
+  {
+    id: 3,
+    nroIdentificacion: "11223344",
+    nombre: "Ana",
+    apellido: "Martínez",
+    aseguradora: "Mapfre",
+    medico: "Dr. Luis Fernández"
+  },
 ];
 
 export function PatientSearchInput({ value, onPatientSelected }: PatientSearchInputProps) {
   const [searchValue, setSearchValue] = useState(value);
   const [showModal, setShowModal] = useState(false);
   const [notFoundTerm, setNotFoundTerm] = useState<string | null>(null);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
   // Sincronizar si cambian los props (ej: formulario reiniciado)
   useEffect(() => {
     setSearchValue(value);
+    setSelectedPatient(null);
   }, [value]);
 
   // Buscar paciente por ID o nombre (case insensitive)
-  const matchPatient = (term: string) => {
-    return PATIENTS.find(p =>
-      p.nroIdentificacion === term ||
-      (p.nombre + " " + p.apellido).toLowerCase().includes(term.toLowerCase())
+  const matchPatient = (term: string): Patient | undefined => {
+    return PATIENTS.find(
+      p =>
+        p.nroIdentificacion === term ||
+        (p.nombre + " " + p.apellido).toLowerCase().includes(term.toLowerCase())
     );
   };
 
@@ -46,25 +74,27 @@ export function PatientSearchInput({ value, onPatientSelected }: PatientSearchIn
   const tryToSelectPatient = () => {
     if (!searchValue.trim()) {
       setNotFoundTerm(null);
+      setSelectedPatient(null);
       onPatientSelected(null);
       return;
     }
     const found = matchPatient(searchValue.trim());
     if (found) {
-      // Seleccionar paciente y mostrar su nombre y apellido en el input
       setSearchValue(`${found.nombre} ${found.apellido}`);
       setNotFoundTerm(null);
+      setSelectedPatient(found);
       onPatientSelected(found);
     } else {
       setShowModal(true);
       setNotFoundTerm(searchValue.trim());
+      setSelectedPatient(null);
       onPatientSelected(null);
     }
   };
 
-  // Si el usuario borra el input por completo, se limpia la selección
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
+    setSelectedPatient(null);
     if (e.target.value.trim() === "") {
       onPatientSelected(null);
     }
@@ -92,6 +122,28 @@ export function PatientSearchInput({ value, onPatientSelected }: PatientSearchIn
         />
       </div>
 
+      {/* Mostrar datos del paciente seleccionado */}
+      {selectedPatient && (
+        <div className="mt-2 rounded bg-slate-50 border p-3 text-slate-800 space-y-1 shadow-sm">
+          <div>
+            <span className="font-semibold">Nombre y Apellido:&nbsp;</span>
+            {selectedPatient.nombre} {selectedPatient.apellido}
+          </div>
+          <div>
+            <span className="font-semibold">N° Identificación:&nbsp;</span>
+            {selectedPatient.nroIdentificacion}
+          </div>
+          <div>
+            <span className="font-semibold">Aseguradora:&nbsp;</span>
+            {selectedPatient.aseguradora}
+          </div>
+          <div>
+            <span className="font-semibold">Médico:&nbsp;</span>
+            {selectedPatient.medico}
+          </div>
+        </div>
+      )}
+
       {/* Modal Registro Paciente Nuevo */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="max-w-lg">
@@ -118,3 +170,4 @@ export function PatientSearchInput({ value, onPatientSelected }: PatientSearchIn
     </div>
   );
 }
+
