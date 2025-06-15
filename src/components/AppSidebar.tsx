@@ -218,12 +218,7 @@ export function AppSidebar({ activeSection, onSectionChange, onMastersMenu }: Ap
       </SidebarContent>
 
       <SidebarFooter>
-        <div className="px-4 py-2">
-          <button className="flex items-center gap-2 text-slate-600 hover:text-slate-800">
-            <Settings className="h-4 w-4" />
-            <span className="text-sm">Configuración General</span>
-          </button>
-        </div>
+        {/* Footer vacío - configuración movida a maestros */}
       </SidebarFooter>
     </Sidebar>
   );
