@@ -8,13 +8,13 @@ import {
   CreditCard,
   BarChart3,
   Settings,
-  DatabaseImport,
   ClipboardList,
   UserPlus,
   Building2,
   Layers3,
   FlaskConical,
-  AlarmClock
+  AlarmClock,
+  ArrowDownToLine   // Use this as the import icon
 } from "lucide-react";
 import {
   Sidebar,
@@ -101,7 +101,7 @@ const mastersMenu = [
   },
   {
     label: "Importar",
-    icon: DatabaseImport,
+    icon: ArrowDownToLine,  // Use ArrowDownToLine icon here
     key: "masters-import"
   }
 ];
