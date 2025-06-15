@@ -1,18 +1,28 @@
 
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import SettingsUsersRoles from "./SettingsSections/SettingsUsersRoles";
+import SettingsGeneralPreferences from "./SettingsSections/SettingsGeneralPreferences";
+import SettingsLabParameters from "./SettingsSections/SettingsLabParameters";
+import SettingsPrintParameters from "./SettingsSections/SettingsPrintParameters";
+import SettingsNotifications from "./SettingsSections/SettingsNotifications";
+import SettingsDocumentNumbering from "./SettingsSections/SettingsDocumentNumbering";
+import SettingsIntegrations from "./SettingsSections/SettingsIntegrations";
+import SettingsBackupSecurity from "./SettingsSections/SettingsBackupSecurity";
+import SettingsInterfaceConfig from "./SettingsSections/SettingsInterfaceConfig";
+import SettingsDefaultValues from "./SettingsSections/SettingsDefaultValues";
 
 const SETTINGS_CATEGORIES = [
-  { key: "users", label: "Usuarios y Roles" },
-  { key: "preferences", label: "Preferencias Generales" },
-  { key: "lab-parameters", label: "Parámetros del Laboratorio" },
-  { key: "print-parameters", label: "Parámetros de Impresión" },
-  { key: "notifications", label: "Notificaciones" },
-  { key: "document-numbering", label: "Numeración de Documentos" },
-  { key: "integrations", label: "Integraciones" },
-  { key: "backup-security", label: "Respaldos y Seguridad" },
-  { key: "interface-config", label: "Configuración de Interfaces" },
-  { key: "default-values", label: "Valores por Defecto" },
+  { key: "users", label: "Usuarios y Roles", component: <SettingsUsersRoles /> },
+  { key: "preferences", label: "Preferencias Generales", component: <SettingsGeneralPreferences /> },
+  { key: "lab-parameters", label: "Parámetros del Laboratorio", component: <SettingsLabParameters /> },
+  { key: "print-parameters", label: "Parámetros de Impresión", component: <SettingsPrintParameters /> },
+  { key: "notifications", label: "Notificaciones", component: <SettingsNotifications /> },
+  { key: "document-numbering", label: "Numeración de Documentos", component: <SettingsDocumentNumbering /> },
+  { key: "integrations", label: "Integraciones", component: <SettingsIntegrations /> },
+  { key: "backup-security", label: "Respaldos y Seguridad", component: <SettingsBackupSecurity /> },
+  { key: "interface-config", label: "Configuración de Interfaces", component: <SettingsInterfaceConfig /> },
+  { key: "default-values", label: "Valores por Defecto", component: <SettingsDefaultValues /> },
 ];
 
 export default function SettingsTabs() {
@@ -26,13 +36,9 @@ export default function SettingsTabs() {
             <TabsTrigger key={key} value={key}>{label}</TabsTrigger>
           ))}
         </TabsList>
-        {SETTINGS_CATEGORIES.map(({ key, label }) => (
+        {SETTINGS_CATEGORIES.map(({ key, component }) => (
           <TabsContent key={key} value={key}>
-            <div className="bg-muted rounded-lg p-6 text-center text-muted-foreground min-h-[200px] flex items-center justify-center">
-              <span>
-                <b>{label}</b>: Configuración aún no implementada.
-              </span>
-            </div>
+            {component}
           </TabsContent>
         ))}
       </Tabs>
