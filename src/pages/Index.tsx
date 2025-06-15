@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -9,6 +8,7 @@ import { SampleAnalysis } from "@/components/SampleAnalysis";
 import { Reports } from "@/components/Reports";
 import { Billing } from "@/components/Billing";
 import MastersModals from "@/components/MastersModals";
+import SettingsTabs from "@/components/SettingsTabs";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -28,6 +28,8 @@ const Index = () => {
         return <Reports />;
       case "billing":
         return <Billing />;
+      case "config":
+        return <SettingsTabs />;
       default:
         return <DashboardContent />;
     }

@@ -1,4 +1,3 @@
-
 import { 
   Activity, 
   Users, 
@@ -65,6 +64,11 @@ const mainMenuItems = [
     title: "Facturación",
     icon: CreditCard,
     key: "billing",
+  },
+  {
+    title: "Configuración",
+    icon: Settings,
+    key: "config",
   }
 ];
 
@@ -181,4 +185,3 @@ export function AppSidebar({ activeSection, onSectionChange, onMastersMenu }: Ap
     </Sidebar>
   );
 }
-
