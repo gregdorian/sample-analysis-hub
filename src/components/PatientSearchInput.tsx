@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Search } from "lucide-react";
@@ -29,6 +29,11 @@ export function PatientSearchInput({ value, onPatientSelected }: PatientSearchIn
   const [showModal, setShowModal] = useState(false);
   const [notFoundTerm, setNotFoundTerm] = useState<string | null>(null);
 
+  // Sincronizar si cambian los props (ej: formulario reiniciado)
+  useEffect(() => {
+    setSearchValue(value);
+  }, [value]);
+
   // Buscar paciente por ID o nombre (case insensitive)
   const matchPatient = (term: string) => {
     return PATIENTS.find(p =>
@@ -40,16 +45,27 @@ export function PatientSearchInput({ value, onPatientSelected }: PatientSearchIn
   // Cuando el usuario intenta salir del input o presiona Enter
   const tryToSelectPatient = () => {
     if (!searchValue.trim()) {
+      setNotFoundTerm(null);
       onPatientSelected(null);
       return;
     }
     const found = matchPatient(searchValue.trim());
     if (found) {
-      onPatientSelected(found);
+      // Seleccionar paciente y mostrar su nombre y apellido en el input
+      setSearchValue(`${found.nombre} ${found.apellido}`);
       setNotFoundTerm(null);
+      onPatientSelected(found);
     } else {
       setShowModal(true);
       setNotFoundTerm(searchValue.trim());
+      onPatientSelected(null);
+    }
+  };
+
+  // Si el usuario borra el input por completo, se limpia la selección
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+    if (e.target.value.trim() === "") {
       onPatientSelected(null);
     }
   };
@@ -61,10 +77,11 @@ export function PatientSearchInput({ value, onPatientSelected }: PatientSearchIn
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
         <Input
           id="patient-search"
+          autoComplete="off"
           placeholder="ID o nombre del paciente"
           className="pl-10"
           value={searchValue}
-          onChange={e => setSearchValue(e.target.value)}
+          onChange={handleInputChange}
           onBlur={tryToSelectPatient}
           onKeyDown={e => {
             if (e.key === "Enter") {
@@ -84,15 +101,12 @@ export function PatientSearchInput({ value, onPatientSelected }: PatientSearchIn
               ¿Desea registrar el paciente <b>{notFoundTerm}</b>?
             </DialogDescription>
           </DialogHeader>
-          {/* Aquí puedes mostrar un formulario de registro o integrar PatientManagement */}
-          {/* Ejemplo básico: */}
           <div className="flex justify-end">
             <DialogClose asChild>
               <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
                 Cancelar
               </Button>
             </DialogClose>
-            {/* Aquí podrías reemplazar esto con tu flujo real de registro */}
             <DialogClose asChild>
               <Button type="button" className="bg-blue-600 ml-2" onClick={() => setShowModal(false)}>
                 Registrar
