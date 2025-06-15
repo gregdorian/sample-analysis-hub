@@ -1,6 +1,6 @@
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import UsersRolesTable from "@/components/UsersRolesTable";
 
 export default function SettingsUsersRoles() {
   return (
@@ -9,12 +9,7 @@ export default function SettingsUsersRoles() {
         <CardTitle>Usuarios y Roles</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="mb-4 text-muted-foreground">
-          Administre los usuarios del sistema y gestione los roles y permisos asignados a cada uno.
-        </p>
-        <Button variant="default" disabled>
-          Añadir Usuario (proximamente)
-        </Button>
+        <UsersRolesTable />
       </CardContent>
     </Card>
   );
