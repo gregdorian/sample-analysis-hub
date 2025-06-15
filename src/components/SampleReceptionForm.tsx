@@ -39,18 +39,30 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
 
   // Validar campos requeridos
   const isFormValid = () => {
+    console.log("Validando formulario:", {
+      patientSearch: patientSearch.trim(),
+      orderNumber: orderNumber.trim(),
+      examType: examType.trim(),
+      sampleType: sampleType.trim(),
+      area: area.trim(),
+      priority: priority.trim()
+    });
+
     return (
-      patientSearch.trim() &&
-      orderNumber.trim() &&
-      examType.trim() &&
-      sampleType.trim() &&
-      area.trim() &&
-      priority.trim()
+      patientSearch.trim() !== "" &&
+      orderNumber.trim() !== "" &&
+      examType.trim() !== "" &&
+      sampleType.trim() !== "" &&
+      area.trim() !== "" &&
+      priority.trim() !== ""
     );
   };
 
   const handleFormRegisterSample = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    console.log("Intentando registrar muestra...");
+    console.log("Formulario válido:", isFormValid());
 
     if (!isFormValid()) {
       toast({
@@ -73,6 +85,8 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
       receptionDate: new Date().toISOString().split('T')[0],
       status: "Recibida",
     };
+
+    console.log("Registrando nueva muestra:", newSample);
 
     onAddSample(newSample);
 
@@ -104,7 +118,7 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
         <form onSubmit={handleFormRegisterSample}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="patient-search">Buscar Paciente</Label>
+              <Label htmlFor="patient-search">Buscar Paciente *</Label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
@@ -113,23 +127,26 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
                   className="pl-10"
                   value={patientSearch}
                   onChange={(e) => setPatientSearch(e.target.value)}
+                  required
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="order-number">Número de Orden</Label>
+              <Label htmlFor="order-number">Número de Orden *</Label>
               <Input
                 id="order-number"
                 placeholder="ORD001"
                 value={orderNumber}
                 onChange={(e) => setOrderNumber(e.target.value)}
+                required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="exam-type">Tipo de Examen</Label>
+              <Label htmlFor="exam-type">Tipo de Examen *</Label>
               <Select
                 value={examType}
                 onValueChange={setExamType}
+                required
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccione examen" />
@@ -144,10 +161,11 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="sample-type">Tipo de Muestra</Label>
+              <Label htmlFor="sample-type">Tipo de Muestra *</Label>
               <Select
                 value={sampleType}
                 onValueChange={setSampleType}
+                required
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccione muestra" />
@@ -161,10 +179,11 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="area">Área Asignada</Label>
+              <Label htmlFor="area">Área Asignada *</Label>
               <Select
                 value={area}
                 onValueChange={setArea}
+                required
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccione área" />
@@ -178,10 +197,11 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="priority">Prioridad</Label>
+              <Label htmlFor="priority">Prioridad *</Label>
               <Select
                 value={priority}
                 onValueChange={setPriority}
+                required
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccione prioridad" />
@@ -195,7 +215,11 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
             </div>
           </div>
           <div className="flex justify-end mt-6">
-            <Button className="bg-blue-600 hover:bg-blue-700" type="submit">
+            <Button 
+              className="bg-blue-600 hover:bg-blue-700" 
+              type="submit"
+              disabled={!isFormValid()}
+            >
               <CheckCircle className="h-4 w-4 mr-2" />
               Registrar Muestra
             </Button>
