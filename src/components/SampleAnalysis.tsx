@@ -379,7 +379,7 @@ export function SampleAnalysis() {
                           type="number"
                           size="sm"
                           value={analysisData.equipmentCost}
-                          onChange={(e) => handleInputChange('equipmentCost', Number(e.target.value))}
+                          onChange={(e) => handleInputChange('equipmentCost', Number(e.target.value) || 0)}
                         />
                       </div>
                       <div>
@@ -389,7 +389,7 @@ export function SampleAnalysis() {
                           type="number"
                           size="sm"
                           value={analysisData.reagentCost}
-                          onChange={(e) => handleInputChange('reagentCost', Number(e.target.value))}
+                          onChange={(e) => handleInputChange('reagentCost', Number(e.target.value) || 0)}
                         />
                       </div>
                       <div>
@@ -399,7 +399,7 @@ export function SampleAnalysis() {
                           type="number"
                           size="sm"
                           value={analysisData.laborCost}
-                          onChange={(e) => handleInputChange('laborCost', Number(e.target.value))}
+                          onChange={(e) => handleInputChange('laborCost', Number(e.target.value) || 0)}
                         />
                       </div>
                     </div>
