@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { TestTube, Search, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ExamItemTable, ExamItem } from "./ExamItemTable";
+import { PatientSearchInput } from "./PatientSearchInput";
 
 interface Sample {
   id: string;
@@ -37,8 +37,9 @@ const emptyExamForm: Omit<ExamItem, 'id'> = {
 export function SampleReceptionForm({ onAddSample, samplesCount }: SampleReceptionFormProps) {
   const { toast } = useToast();
 
-  // Estado de paciente
-  const [patientSearch, setPatientSearch] = useState("");
+  // Estado de paciente recibe un objeto Patient o string si es manual
+  const [selectedPatient, setSelectedPatient] = useState<any>(null);
+  const [patientSearch, setPatientSearch] = useState(""); // Manténlo para compatibilidad con Exam
   // Examenes agregados (detalle)
   const [examItems, setExamItems] = useState<ExamItem[]>([]);
   // Estado para manejar el formulario de un examen
@@ -51,7 +52,7 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
   // Validaciones
   const canAddExam = examForm.examType && examForm.sampleType && examForm.area && examForm.priority;
   const canRegisterSample = (
-    patientSearch.trim() !== "" &&
+    selectedPatient &&
     examItems.length > 0
   );
 
@@ -121,12 +122,11 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
       return;
     }
 
-    // Registrar por cada examen como una muestra
     examItems.forEach((item) => {
       const newSample: Sample = {
         id: `M${String(samplesCount + 1).padStart(3, '0')}`,
-        patientName: patientSearch,
-        patientId: "---",
+        patientName: selectedPatient ? `${selectedPatient.nombre} ${selectedPatient.apellido}` : patientSearch,
+        patientId: selectedPatient ? selectedPatient.nroIdentificacion : "---",
         orderNumber,
         examType: item.examType,
         sampleType: item.sampleType,
@@ -144,8 +144,8 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
       variant: "default",
     });
 
-    // Limpiar formulario
     setPatientSearch("");
+    setSelectedPatient(null);
     setExamItems([]);
     setExamForm(emptyExamForm);
     setEditingExamId(null);
@@ -163,21 +163,13 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
       <CardContent>
         <form onSubmit={handleRegisterSample}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="patient-search">Buscar Paciente *</Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                <Input
-                  id="patient-search"
-                  placeholder="ID o nombre del paciente"
-                  className="pl-10"
-                  value={patientSearch}
-                  onChange={(e) => setPatientSearch(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
+            <PatientSearchInput
+              value={patientSearch}
+              onPatientSelected={(p) => {
+                setSelectedPatient(p);
+                setPatientSearch(p ? `${p.nombre} ${p.apellido}` : ""); // Sync for clarity
+              }}
+            />
             <div className="space-y-2">
               <Label htmlFor="order-number">Número de Orden *</Label>
               <Input
@@ -310,4 +302,3 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
     </Card>
   );
 }
-
