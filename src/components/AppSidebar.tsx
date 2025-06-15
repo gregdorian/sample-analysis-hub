@@ -134,7 +134,9 @@ export function AppSidebar({ activeSection, onSectionChange, onMastersMenu }: Ap
               <p className="text-sm text-slate-600">Sistema de Gestión</p>
             </div>
           </div>
-          <SidebarTrigger />
+          <div className="p-1">
+            <SidebarTrigger className="h-8 w-8" />
+          </div>
         </div>
       </SidebarHeader>
       
