@@ -1,18 +1,68 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Plus, Edit, Eye } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Search, Plus, Edit, Eye, Trash2, Import, Database } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogFooter,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+
+interface Patient {
+  id: number;
+  nroIdentificacion: string;
+  nombre: string;
+  apellido: string;
+  historiaClinica: string;
+  sexo: "M" | "F";
+  fechaNacimiento: string;
+  telefono: string;
+  email: string;
+}
+
+function parseCsv(text: string): Patient[] {
+  // Asumimos que los encabezados coinciden con el modelo Patient (menos id)
+  const lines = text.trim().split("\n");
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(",");
+  // id autoincremental
+  let nextId = Date.now();
+  return lines.slice(1).map(line => {
+    const values = line.split(",");
+    const p: any = {};
+    headers.forEach((h, i) => p[h.trim()] = values[i]?.trim() || '');
+    return {
+      ...p,
+      id: nextId++,
+      sexo: p.sexo === "F" ? "F" : "M", // sanitize
+    } as Patient;
+  });
+}
 
 export function PatientManagement() {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedPatient, setSelectedPatient] = useState<any>(null);
-
-  const patients = [
+  const [patients, setPatients] = useState<Patient[]>([
     {
       id: 1,
       nroIdentificacion: "12345678",
@@ -46,82 +96,355 @@ export function PatientManagement() {
       telefono: "555-0789",
       email: "ana.martinez@email.com"
     }
-  ];
+  ]);
+  const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
+  const [deletingPatient, setDeletingPatient] = useState<Patient | null>(null);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [csvImporting, setCsvImporting] = useState(false);
+  const [csvError, setCsvError] = useState<string | null>(null);
+  const [importFromApiLoading, setImportFromApiLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const filteredPatients = patients.filter(patient =>
+  // --- Paciente a crear/editar (form state) ---
+  const [formFields, setFormFields] = useState<Omit<Patient, "id">>({
+    nroIdentificacion: "",
+    nombre: "",
+    apellido: "",
+    historiaClinica: "",
+    sexo: "M",
+    fechaNacimiento: "",
+    telefono: "",
+    email: "",
+  });
+
+  // --- FUNCIONES CRUD ---
+  const handleSavePatient = () => {
+    // Crear o actualizar paciente
+    if (!formFields.nombre.trim() || !formFields.apellido.trim() || !formFields.nroIdentificacion.trim()) {
+      toast({
+        title: "Campos obligatorios",
+        description: "Debe completar nombre, apellido e identificación.",
+        variant: "destructive"
+      });
+      return;
+    }
+    if (editingPatient) {
+      setPatients((prev) =>
+        prev.map((p) => (p.id === editingPatient.id ? { ...editingPatient, ...formFields } : p))
+      );
+      toast({ title: "Paciente actualizado" });
+    } else {
+      // Nuevo id autoincremental
+      const maxId = Math.max(0, ...patients.map((p) => p.id));
+      setPatients((prev) => [
+        ...prev,
+        {
+          id: maxId + 1,
+          ...formFields
+        }
+      ]);
+      toast({ title: "Paciente registrado" });
+    }
+    setAddDialogOpen(false);
+    setEditDialogOpen(false);
+    setEditingPatient(null);
+    setFormFields({
+      nroIdentificacion: "",
+      nombre: "",
+      apellido: "",
+      historiaClinica: "",
+      sexo: "M",
+      fechaNacimiento: "",
+      telefono: "",
+      email: "",
+    });
+  };
+
+  const handleEdit = (patient: Patient) => {
+    setEditingPatient(patient);
+    setFormFields({
+      nroIdentificacion: patient.nroIdentificacion,
+      nombre: patient.nombre,
+      apellido: patient.apellido,
+      historiaClinica: patient.historiaClinica ?? "",
+      sexo: patient.sexo,
+      fechaNacimiento: patient.fechaNacimiento,
+      telefono: patient.telefono,
+      email: patient.email,
+    });
+    setEditDialogOpen(true);
+  };
+
+  const handleDelete = (patient: Patient) => {
+    setDeletingPatient(patient);
+  };
+
+  const confirmDelete = () => {
+    if (deletingPatient) {
+      setPatients((prev) => prev.filter((p) => p.id !== deletingPatient.id));
+      toast({
+        title: "Paciente eliminado",
+        description: `${deletingPatient.nombre} ${deletingPatient.apellido} fue eliminado de la lista.`,
+        variant: "destructive"
+      });
+    }
+    setDeletingPatient(null);
+  };
+
+  const filteredPatients = patients.filter((patient) =>
     patient.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
     patient.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
     patient.nroIdentificacion.includes(searchTerm) ||
     patient.historiaClinica.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // --- IMPORTAR CSV ---
+  const handleCsvFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCsvError(null);
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCsvImporting(true);
+    const reader = new FileReader();
+    reader.onload = (ev: ProgressEvent<FileReader>) => {
+      const text = ev.target?.result as string;
+      try {
+        const patientsFromCsv = parseCsv(text);
+        if (patientsFromCsv.length === 0) throw new Error("CSV vacío o cabezales incorrectos.");
+        // Unir evitando duplicados por nroIdentificacion
+        setPatients((prev) => {
+          const existingIDs = new Set(prev.map((p) => p.nroIdentificacion));
+          const filtered = patientsFromCsv.filter(p => !existingIDs.has(p.nroIdentificacion));
+          return [...prev, ...filtered];
+        });
+        toast({ title: "Pacientes importados por CSV", description: `Se importaron ${patientsFromCsv.length} pacientes.` });
+        setImportDialogOpen(false);
+      } catch (err: any) {
+        setCsvError("Error al parsear CSV. Revise el formato.");
+      } finally {
+        setCsvImporting(false);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  // --- IMPORTAR DESDE API (fake/simulado) ---
+  const handleImportFromAPI = async () => {
+    setImportFromApiLoading(true);
+    setTimeout(() => {
+      const apiPatients: Patient[] = [
+        {
+          id: Date.now(),
+          nroIdentificacion: "22223333",
+          nombre: "Julio",
+          apellido: "Farfán",
+          historiaClinica: "HC999",
+          sexo: "M",
+          fechaNacimiento: "1990-02-01",
+          telefono: "555-1000",
+          email: "julio.farfan@ejemplo.com"
+        },
+        {
+          id: Date.now() + 1,
+          nroIdentificacion: "44445555",
+          nombre: "Lucía",
+          apellido: "Ramos",
+          historiaClinica: "HC200",
+          sexo: "F",
+          fechaNacimiento: "1988-12-12",
+          telefono: "555-2000",
+          email: "lucia.ramos@ejemplo.com"
+        }
+      ];
+      setPatients((prev) => {
+        const existingIDs = new Set(prev.map((p) => p.nroIdentificacion));
+        const filtered = apiPatients.filter(p => !existingIDs.has(p.nroIdentificacion));
+        return [...prev, ...filtered];
+      });
+      toast({ title: "Pacientes importados por API", description: `Se importaron ${apiPatients.length} pacientes.` });
+      setImportDialogOpen(false);
+      setImportFromApiLoading(false);
+    }, 1200);
+  };
+
+  // --- DIALOG: FORM PARA AGREGAR/EDITAR PACIENTE ---
+  const PatientFormDialog = (
+    <Dialog open={addDialogOpen || editDialogOpen} onOpenChange={open => { setAddDialogOpen(open); setEditDialogOpen(open ? true : false); }}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{editingPatient ? "Editar Paciente" : "Registrar Nuevo Paciente"}</DialogTitle>
+          <DialogDescription>Complete la información del paciente</DialogDescription>
+        </DialogHeader>
+        <div className="grid grid-cols-2 gap-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="identificacion">Número de Identificación</Label>
+            <Input
+              id="identificacion"
+              placeholder="Ej: 12345678"
+              value={formFields.nroIdentificacion}
+              onChange={e => setFormFields(f => ({ ...f, nroIdentificacion: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="historiaClinica">Historia Clínica</Label>
+            <Input
+              id="historiaClinica"
+              placeholder="Ej: HC001"
+              value={formFields.historiaClinica}
+              onChange={e => setFormFields(f => ({ ...f, historiaClinica: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="nombre">Nombre</Label>
+            <Input
+              id="nombre"
+              placeholder="Nombre del paciente"
+              value={formFields.nombre}
+              onChange={e => setFormFields(f => ({ ...f, nombre: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="apellido">Apellido</Label>
+            <Input
+              id="apellido"
+              placeholder="Apellido del paciente"
+              value={formFields.apellido}
+              onChange={e => setFormFields(f => ({ ...f, apellido: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="sexo">Sexo</Label>
+            <Select
+              value={formFields.sexo}
+              onValueChange={val => setFormFields(f => ({ ...f, sexo: val as "M" | "F" }))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccione" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="M">Masculino</SelectItem>
+                <SelectItem value="F">Femenino</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="fechaNacimiento">Fecha de Nacimiento</Label>
+            <Input
+              id="fechaNacimiento"
+              type="date"
+              value={formFields.fechaNacimiento}
+              onChange={e => setFormFields(f => ({ ...f, fechaNacimiento: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="telefono">Teléfono</Label>
+            <Input
+              id="telefono"
+              placeholder="555-0123"
+              value={formFields.telefono}
+              onChange={e => setFormFields(f => ({ ...f, telefono: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="paciente@email.com"
+              value={formFields.email}
+              onChange={e => setFormFields(f => ({ ...f, email: e.target.value }))}
+            />
+          </div>
+        </div>
+        <div className="flex justify-end gap-2">
+          <DialogClose asChild>
+            <Button variant="outline"
+              onClick={() => { setEditingPatient(null); setFormFields({ nroIdentificacion: "", nombre: "", apellido: "", historiaClinica: "", sexo: "M", fechaNacimiento: "", telefono: "", email: "" }); }}
+            >Cancelar</Button>
+          </DialogClose>
+          <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleSavePatient}>
+            {editingPatient ? "Actualizar" : "Guardar"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
+  // --- DIALOG: IMPORTACION ---
+  const ImportDialog = (
+    <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Importar Pacientes</DialogTitle>
+          <DialogDescription>
+            Puede importar desde un archivo CSV o desde una API externa.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <div>
+            <Label>Importar archivo CSV:</Label>
+            <Input
+              type="file"
+              accept=".csv"
+              ref={fileInputRef}
+              disabled={csvImporting}
+              onChange={handleCsvFile}
+              className="mt-1"
+            />
+            {csvError && <div className="text-destructive text-sm mt-1">{csvError}</div>}
+            <p className="text-xs text-muted-foreground mt-1">Encabezados: nroIdentificacion,nombre,apellido,historiaClinica,sexo,fechaNacimiento,telefono,email</p>
+          </div>
+          <div>
+            <Label>Importar desde API:</Label>
+            <Button disabled={importFromApiLoading} className="mt-1" onClick={handleImportFromAPI}>
+              <Database className="h-4 w-4 mr-2" />
+              {importFromApiLoading ? "Importando..." : "Importar desde API"}
+            </Button>
+            <span className="text-xs text-muted-foreground block mt-1">Simulado para demo (no consume una API real).</span>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
+  // --- DIALOG DE ELIMINACIÓN (ALERTA) ---
+  const DeleteAlert = (
+    <AlertDialog open={!!deletingPatient} onOpenChange={open => !open && setDeletingPatient(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>¿Eliminar paciente?</AlertDialogTitle>
+          <AlertDialogDescription>
+            ¿Seguro que desea eliminar a <b>{deletingPatient?.nombre} {deletingPatient?.apellido}</b>?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+            Eliminar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-800">Gestión de Pacientes</h1>
           <p className="text-slate-600">Registro y administración de pacientes</p>
         </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              <Plus className="h-4 w-4 mr-2" />
-              Nuevo Paciente
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Registrar Nuevo Paciente</DialogTitle>
-              <DialogDescription>Complete la información del paciente</DialogDescription>
-            </DialogHeader>
-            <div className="grid grid-cols-2 gap-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="identificacion">Número de Identificación</Label>
-                <Input id="identificacion" placeholder="Ej: 12345678" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="historiaClinica">Historia Clínica</Label>
-                <Input id="historiaClinica" placeholder="Ej: HC001" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="nombre">Nombre</Label>
-                <Input id="nombre" placeholder="Nombre del paciente" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="apellido">Apellido</Label>
-                <Input id="apellido" placeholder="Apellido del paciente" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="sexo">Sexo</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="M">Masculino</SelectItem>
-                    <SelectItem value="F">Femenino</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="fechaNacimiento">Fecha de Nacimiento</Label>
-                <Input id="fechaNacimiento" type="date" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="telefono">Teléfono</Label>
-                <Input id="telefono" placeholder="555-0123" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="paciente@email.com" />
-              </div>
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline">Cancelar</Button>
-              <Button className="bg-blue-600 hover:bg-blue-700">Guardar</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <div className="flex gap-2">
+          <Button className="bg-green-700 hover:bg-green-800" onClick={() => setImportDialogOpen(true)}>
+            <Import className="h-4 w-4 mr-2" />
+            Importar
+          </Button>
+          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => { setEditingPatient(null); setAddDialogOpen(true); }}>
+            <Plus className="h-4 w-4 mr-2" />
+            Nuevo Paciente
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
@@ -168,21 +491,31 @@ export function PatientManagement() {
                     <td className="py-3 px-4">{patient.telefono}</td>
                     <td className="py-3 px-4">
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" onClick={() => handleEdit(patient)}>
                           <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleDelete(patient)}>
+                          <Trash2 className="h-4 w-4 text-red-500" />
                         </Button>
                       </div>
                     </td>
                   </tr>
                 ))}
+                {filteredPatients.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="text-center py-4 text-slate-500">No se encontraron pacientes.</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
         </CardContent>
       </Card>
+
+      {/* DIALOGS */}
+      {PatientFormDialog}
+      {ImportDialog}
+      {DeleteAlert}
     </div>
   );
 }
