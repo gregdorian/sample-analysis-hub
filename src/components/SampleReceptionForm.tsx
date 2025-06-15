@@ -51,6 +51,7 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
 
   // Validaciones
   const canAddExam = examForm.examType && examForm.sampleType && examForm.area && examForm.priority;
+  // Actualizamos: Solo considerar exámenes y paciente cuando haya al menos uno en examItems y un paciente seleccionado
   const canRegisterSample = (
     selectedPatient &&
     examItems.length > 0
@@ -113,7 +114,8 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
   const handleRegisterSample = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!canRegisterSample) {
+    // Si NO hay exámenes, mostrar la validación y NO procesar
+    if (examItems.length === 0 || !selectedPatient) {
       toast({
         title: "Formulario incompleto",
         description: "Ingrese paciente y al menos un examen.",
@@ -122,6 +124,7 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
       return;
     }
 
+    // Procesar registro de MUESTRA(S)
     examItems.forEach((item) => {
       const newSample: Sample = {
         id: `M${String(samplesCount + 1).padStart(3, '0')}`,
@@ -144,6 +147,7 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
       variant: "default",
     });
 
+    // Limpiar formulario: esto NO debe disparar ninguna validación de registro
     setPatientSearch("");
     setSelectedPatient(null);
     setExamItems([]);
