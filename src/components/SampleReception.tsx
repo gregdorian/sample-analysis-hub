@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { SampleReceptionHeader } from "./SampleReceptionHeader";
 import { SampleReceptionForm } from "./SampleReceptionForm";
@@ -52,30 +51,9 @@ export function SampleReception() {
     setSamples([...samples, newSample]);
   };
 
-  const handleQuickRegister = () => {
-    const newSample: Sample = {
-      id: `M${String(samples.length + 1).padStart(3, '0')}`,
-      patientName: "Nuevo Paciente",
-      patientId: "00000000",
-      orderNumber: `ORD${String(samples.length + 1).padStart(3, '0')}`,
-      examType: "Examen Pendiente",
-      sampleType: "Pendiente",
-      area: "Pendiente",
-      priority: "Normal",
-      receptionDate: new Date().toISOString().split('T')[0],
-      status: "Recibida"
-    };
-
-    setSamples([...samples, newSample]);
-    toast({
-      title: "Muestra registrada",
-      description: `Muestra ${newSample.id} registrada exitosamente`,
-    });
-  };
-
   return (
     <div className="space-y-6">
-      <SampleReceptionHeader onQuickRegister={handleQuickRegister} />
+      <SampleReceptionHeader />
       <SampleReceptionForm onAddSample={handleAddSample} samplesCount={samples.length} />
       <SamplesTable samples={samples} />
     </div>
