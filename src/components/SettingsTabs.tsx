@@ -30,17 +30,27 @@ export default function SettingsTabs() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Configuración</h1>
-      <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <TabsList className="flex flex-wrap gap-2 mb-4">
-          {SETTINGS_CATEGORIES.map(({ key, label }) => (
-            <TabsTrigger key={key} value={key}>{label}</TabsTrigger>
-          ))}
-        </TabsList>
-        {SETTINGS_CATEGORIES.map(({ key, component }) => (
-          <TabsContent key={key} value={key}>
-            {component}
-          </TabsContent>
-        ))}
+      <Tabs value={tab} onValueChange={setTab} className="w-full" orientation="vertical">
+        <div className="flex gap-6">
+          <TabsList className="flex flex-col items-stretch h-auto bg-muted/50 rounded-lg p-1 min-w-[220px] shrink-0">
+            {SETTINGS_CATEGORIES.map(({ key, label }) => (
+              <TabsTrigger
+                key={key}
+                value={key}
+                className="justify-start text-left px-3 py-2.5 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
+                {label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <div className="flex-1 min-w-0">
+            {SETTINGS_CATEGORIES.map(({ key, component }) => (
+              <TabsContent key={key} value={key} className="mt-0">
+                {component}
+              </TabsContent>
+            ))}
+          </div>
+        </div>
       </Tabs>
     </div>
   );
