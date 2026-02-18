@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SidebarFooter } from "@/components/ui/sidebar";
 import {
@@ -59,6 +59,10 @@ export default function AppSidebarFooter() {
           <DropdownMenuItem onClick={() => setProfileOpen(true)}>
             <User className="mr-2 h-4 w-4" />
             Mi perfil
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/")}>
+            <Home className="mr-2 h-4 w-4" />
+            Ir a Landing Page
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
