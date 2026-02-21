@@ -7,6 +7,7 @@ import { SampleReception } from "@/components/SampleReception";
 import { SampleAnalysis } from "@/components/SampleAnalysis";
 import { Reports } from "@/components/Reports";
 import { Billing } from "@/components/Billing";
+import { Appointments } from "@/components/Appointments";
 import MastersModals from "@/components/MastersModals";
 import SettingsTabs from "@/components/SettingsTabs";
 
@@ -20,6 +21,8 @@ const Index = () => {
         return <DashboardContent />;
       case "patients":
         return <PatientManagement />;
+      case "appointments":
+        return <Appointments />;
       case "reception":
         return <SampleReception />;
       case "analysis":

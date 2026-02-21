@@ -1,5 +1,5 @@
 
-import { ChevronDown, BarChart3, Users, TestTube, Microscope, FileText, CreditCard } from "lucide-react";
+import { ChevronDown, BarChart3, Users, TestTube, Microscope, FileText, CreditCard, CalendarCheck } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -14,6 +14,7 @@ import { useState } from "react";
 const mainMenuItems = [
   { title: "Dashboard", icon: BarChart3, key: "dashboard" },
   { title: "Gestión de Pacientes", icon: Users, key: "patients" },
+  { title: "Citas", icon: CalendarCheck, key: "appointments" },
   { title: "Recepción de Muestras", icon: TestTube, key: "reception" },
   { title: "Análisis de Muestras", icon: Microscope, key: "analysis" },
   { title: "Reportes", icon: FileText, key: "reports" },
