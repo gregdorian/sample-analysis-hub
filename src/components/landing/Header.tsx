@@ -29,6 +29,14 @@ const Header = () => {
           </Button>
           <Button
             size="sm"
+            variant="outline"
+            className="rounded-full"
+            onClick={() => navigate("/registro-laboratorio")}
+          >
+            Registrar Laboratorio
+          </Button>
+          <Button
+            size="sm"
             className="bg-green-700 hover:bg-green-800 text-white rounded-full"
             onClick={() => navigate("/login")}
           >

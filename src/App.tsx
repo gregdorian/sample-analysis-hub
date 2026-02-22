@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Landing from "./pages/Landing";
+import LabRegistration from "./pages/LabRegistration";
 import Login from "./pages/Login";
 import { ThemeProvider } from "@/hooks/use-theme";
 
@@ -23,6 +24,7 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/landing" element={<Navigate to="/" replace />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/registro-laboratorio" element={<LabRegistration />} />
             <Route path="/dashboard" element={<Index />} />
             {/* Si alguien entra a cualquier otro lado, ir a not found */}
             <Route path="*" element={<NotFound />} />
