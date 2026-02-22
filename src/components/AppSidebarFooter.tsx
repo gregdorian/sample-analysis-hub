@@ -60,9 +60,9 @@ export default function AppSidebarFooter() {
             <User className="mr-2 h-4 w-4" />
             Mi perfil
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/")}>
+          <DropdownMenuItem onClick={() => navigate("/laboratorio")}>
             <Home className="mr-2 h-4 w-4" />
-            Ir a Landing Page
+            Ir a mi Laboratorio
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
