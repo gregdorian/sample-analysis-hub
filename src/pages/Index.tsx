@@ -10,6 +10,7 @@ import { Billing } from "@/components/Billing";
 import { Appointments } from "@/components/Appointments";
 import MastersModals from "@/components/MastersModals";
 import SettingsTabs from "@/components/SettingsTabs";
+import PatientAppointmentModule from "@/components/landing/PatientAppointmentModule";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -31,6 +32,8 @@ const Index = () => {
         return <Reports />;
       case "billing":
         return <Billing />;
+      case "portal-citas":
+        return <PatientAppointmentModule />;
       case "config-general":
         return <SettingsTabs />;
       default:
