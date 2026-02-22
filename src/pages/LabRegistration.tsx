@@ -145,7 +145,7 @@ export default function LabRegistration() {
     };
     localStorage.setItem("lab-registration", JSON.stringify(config));
     toast({ title: "¡Registro completado!", description: `El laboratorio "${labName}" ha sido registrado exitosamente. Recibirá un correo de activación.` });
-    navigate("/login");
+    navigate("/laboratorio");
   };
 
   const currentPlan = PLAN_OPTIONS.find(p => p.id === selectedPlan);
