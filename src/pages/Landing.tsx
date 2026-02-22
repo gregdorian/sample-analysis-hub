@@ -1,6 +1,7 @@
 
 import Header from "@/components/landing/Header";
 import Hero from "@/components/landing/Hero";
+import PatientAppointmentModule from "@/components/landing/PatientAppointmentModule";
 import KeyBenefits from "@/components/landing/KeyBenefits";
 import Workflow from "@/components/landing/Workflow";
 import PricingSection from "@/components/landing/PricingSection";
@@ -12,6 +13,7 @@ export default function Landing() {
     <div className="bg-white dark:bg-background min-h-screen flex flex-col">
       <Header />
       <Hero />
+      <PatientAppointmentModule />
       <KeyBenefits />
       <Workflow />
       <PricingSection />
