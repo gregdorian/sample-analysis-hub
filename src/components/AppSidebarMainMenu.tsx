@@ -1,5 +1,5 @@
 
-import { ChevronDown, BarChart3, Users, TestTube, Microscope, FileText, CreditCard, CalendarCheck } from "lucide-react";
+import { ChevronDown, BarChart3, Users, TestTube, Microscope, FileText, CreditCard, CalendarCheck, Globe } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -18,7 +18,8 @@ const mainMenuItems = [
   { title: "Recepción de Muestras", icon: TestTube, key: "reception" },
   { title: "Análisis de Muestras", icon: Microscope, key: "analysis" },
   { title: "Reportes", icon: FileText, key: "reports" },
-  { title: "Facturación", icon: CreditCard, key: "billing" }
+  { title: "Facturación", icon: CreditCard, key: "billing" },
+  { title: "Portal de Citas (Pacientes)", icon: Globe, key: "portal-citas" },
 ];
 
 export default function AppSidebarMainMenu({
