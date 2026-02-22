@@ -35,13 +35,6 @@ const Header = () => {
           >
             Registrar Laboratorio
           </Button>
-          <Button
-            size="sm"
-            className="bg-green-700 hover:bg-green-800 text-white rounded-full"
-            onClick={() => navigate("/login")}
-          >
-            Ingresar
-          </Button>
         </div>
       </header>
       <SaasConfigDialog open={configOpen} onOpenChange={setConfigOpen} />
