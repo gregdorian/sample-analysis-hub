@@ -7,8 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import {
   LogIn, Building2, Phone, Mail, MapPin, TestTube, Microscope,
   FlaskConical, Heart, Activity, Clock, Users, Award, ChevronRight,
-  CalendarCheck, FileText, Beaker, Dna, Bug, ShieldCheck
+  CalendarCheck, FileText, Beaker, Dna, Bug, ShieldCheck, Search
 } from "lucide-react";
+import LabResultsLookup from "@/components/LabResultsLookup";
 
 interface LabConfig {
   lab: {
@@ -91,6 +92,7 @@ export default function LabPortal() {
         </div>
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
           <a href="#inicio" className="hover:text-primary transition-colors">Inicio</a>
+          <a href="#resultados" className="hover:text-primary transition-colors">Resultados</a>
           <a href="#servicios" className="hover:text-primary transition-colors">Servicios</a>
           <a href="#preparacion" className="hover:text-primary transition-colors">Preparación</a>
           <a href="#citas" className="hover:text-primary transition-colors">Citas</a>
@@ -155,8 +157,21 @@ export default function LabPortal() {
         </div>
       </section>
 
+      {/* ===== CONSULTA DE RESULTADOS ===== */}
+      <section id="resultados" className="py-16 px-4 md:px-10 bg-muted/30">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-black text-primary">Consulte sus Resultados</h2>
+            <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
+              Ingrese su número de identificación para consultar y descargar sus resultados de laboratorio.
+            </p>
+          </div>
+          <LabResultsLookup />
+        </div>
+      </section>
+
       {/* ===== SERVICIOS ===== */}
-      <section id="servicios" className="py-16 px-4 md:px-10 bg-muted/30">
+      <section id="servicios" className="py-16 px-4 md:px-10">
         <div className="max-w-6xl mx-auto text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-black text-primary">LABORATORIO DE VIDA</h2>
           <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
