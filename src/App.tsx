@@ -10,6 +10,7 @@ import Landing from "./pages/Landing";
 import LabRegistration from "./pages/LabRegistration";
 import Login from "./pages/Login";
 import LabPortal from "./pages/LabPortal";
+import LabAppointments from "./pages/LabAppointments";
 import { ThemeProvider } from "@/hooks/use-theme";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/registro-laboratorio" element={<LabRegistration />} />
             <Route path="/laboratorio" element={<LabPortal />} />
+            <Route path="/laboratorio/citas" element={<LabAppointments />} />
             <Route path="/dashboard" element={<Index />} />
             {/* Si alguien entra a cualquier otro lado, ir a not found */}
             <Route path="*" element={<NotFound />} />
