@@ -12,29 +12,51 @@ import Login from "./pages/Login";
 import LabPortal from "./pages/LabPortal";
 import LabAppointments from "./pages/LabAppointments";
 import { ThemeProvider } from "@/hooks/use-theme";
+import { LabAuthProvider, useLabAuth } from "@/hooks/use-lab-auth";
 
 const queryClient = new QueryClient();
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { auth } = useLabAuth();
+  if (!auth.isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
+}
+
+function LabPortalGuard({ children }: { children: React.ReactNode }) {
+  const { isActive } = useLabAuth();
+  if (!isActive) {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
+}
+
+const AppRoutes = () => (
+  <Routes>
+    <Route path="/" element={<Landing />} />
+    <Route path="/landing" element={<Navigate to="/" replace />} />
+    <Route path="/login" element={<Login />} />
+    <Route path="/registro-laboratorio" element={<LabRegistration />} />
+    <Route path="/laboratorio" element={<LabPortalGuard><LabPortal /></LabPortalGuard>} />
+    <Route path="/laboratorio/citas" element={<LabPortalGuard><LabAppointments /></LabPortalGuard>} />
+    <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/landing" element={<Navigate to="/" replace />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/registro-laboratorio" element={<LabRegistration />} />
-            <Route path="/laboratorio" element={<LabPortal />} />
-            <Route path="/laboratorio/citas" element={<LabAppointments />} />
-            <Route path="/dashboard" element={<Index />} />
-            {/* Si alguien entra a cualquier otro lado, ir a not found */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <LabAuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </TooltipProvider>
+      </LabAuthProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );

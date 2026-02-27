@@ -3,23 +3,24 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft } from "lucide-react";
-
-const mockUser = {
-  email: "demo@gmintlab.com",
-  password: "123456",
-};
+import { ArrowLeft, LogIn, ShieldCheck } from "lucide-react";
+import { useLabAuth } from "@/hooks/use-lab-auth";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login, isRegistered, isPaid, registration } = useLabAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // Mock login: si email/contraseña coinciden, éxito, si no error.
-    if (email === mockUser.email && password === mockUser.password) {
+    if (!isRegistered || !isPaid) {
+      setError("No hay un laboratorio registrado. Debe completar el registro y el pago primero.");
+      return;
+    }
+    const success = login(email, password);
+    if (success) {
       setError("");
       navigate("/dashboard");
     } else {
@@ -28,53 +29,65 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-green-50 dark:bg-background flex items-center justify-center px-4">
-      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg w-full max-w-md p-8">
-        <h1 className="text-2xl font-bold text-green-800 dark:text-green-200 mb-6 text-center">
-          Ingreso a G-Mint Lab
-        </h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          <div>
-            <label className="text-sm text-slate-700 dark:text-slate-100 block mb-1">
-              Email
-            </label>
-            <Input
-              type="email"
-              required
-              autoFocus
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="demo@gmintlab.com"
-            />
-          </div>
-          <div>
-            <label className="text-sm text-slate-700 dark:text-slate-100 block mb-1">
-              Contraseña
-            </label>
-            <Input
-              type="password"
-              required
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="123456"
-            />
-          </div>
-          {error && (
-            <div className="bg-red-100 text-red-700 p-2 rounded text-center text-sm">
-              {error}
-            </div>
-          )}
-          <Button className="bg-green-700 hover:bg-green-800 text-white rounded-full" type="submit">
-            Ingresar
-          </Button>
-        </form>
-        <div className="text-xs text-gray-500 mt-5 text-center">
-          Usuario de prueba: <b>demo@gmintlab.com</b><br />Contraseña: <b>123456</b>
+    <div className="min-h-screen bg-muted/30 flex items-center justify-center px-4">
+      <div className="bg-background border border-border rounded-xl shadow-lg w-full max-w-md p-8">
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <ShieldCheck className="h-8 w-8 text-primary" />
+          <h1 className="text-2xl font-bold text-primary">
+            {registration?.lab?.name || "G-Mint Lab"}
+          </h1>
         </div>
-        <div className="mt-4 text-center">
-          <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <p className="text-center text-sm text-muted-foreground mb-6">
+          Ingrese sus credenciales de administrador para acceder al panel de gestión.
+        </p>
+
+        {!isRegistered || !isPaid ? (
+          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-center space-y-3">
+            <p className="text-sm text-destructive font-medium">
+              No hay un laboratorio registrado con pago activo.
+            </p>
+            <Button variant="outline" onClick={() => navigate("/registro-laboratorio")} className="gap-2">
+              Registrar Laboratorio
+            </Button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <div>
+              <label className="text-sm text-foreground block mb-1">Email</label>
+              <Input
+                type="email"
+                required
+                autoFocus
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="admin@laboratorio.com"
+              />
+            </div>
+            <div>
+              <label className="text-sm text-foreground block mb-1">Contraseña</label>
+              <Input
+                type="password"
+                required
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+            </div>
+            {error && (
+              <div className="bg-destructive/10 text-destructive p-2 rounded text-center text-sm">
+                {error}
+              </div>
+            )}
+            <Button type="submit" className="gap-2">
+              <LogIn className="h-4 w-4" /> Ingresar
+            </Button>
+          </form>
+        )}
+
+        <div className="mt-6 text-center">
+          <Link to="/laboratorio" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="h-4 w-4" />
-            Volver al inicio
+            Volver al portal del laboratorio
           </Link>
         </div>
       </div>

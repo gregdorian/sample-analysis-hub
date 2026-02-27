@@ -1,5 +1,4 @@
 
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,22 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import {
   LogIn, Building2, Phone, Mail, MapPin, TestTube, Microscope,
   FlaskConical, Heart, Activity, Clock, Users, Award, ChevronRight,
-  CalendarCheck, FileText, Beaker, Dna, Bug, ShieldCheck, Search
+  CalendarCheck, FileText, Beaker, Dna, Bug, ShieldCheck, Search, AlertTriangle
 } from "lucide-react";
 import LabResultsLookup from "@/components/LabResultsLookup";
-
-interface LabConfig {
-  lab: {
-    name: string;
-    logo: string | null;
-    description: string;
-    phone: string;
-    email: string;
-    address: string;
-  };
-  exams: string[];
-  plan: { planId: string; users: number; lease: string };
-}
+import { useLabAuth } from "@/hooks/use-lab-auth";
 
 const serviceAreas = [
   { name: "Química Clínica", icon: FlaskConical, desc: "Análisis bioquímicos para diagnóstico integral" },
@@ -42,22 +29,26 @@ const stats = [
 
 export default function LabPortal() {
   const navigate = useNavigate();
-  const [config, setConfig] = useState<LabConfig | null>(null);
+  const { registration } = useLabAuth();
 
-  useEffect(() => {
-    const raw = localStorage.getItem("lab-registration");
-    if (raw) {
-      try { setConfig(JSON.parse(raw)); } catch { /* ignore */ }
-    }
-  }, []);
-
-  const labName = config?.lab?.name || "Laboratorio";
-  const labPhone = config?.lab?.phone || "+57 300 000 0000";
-  const labEmail = config?.lab?.email || "contacto@laboratorio.com";
-  const labAddress = config?.lab?.address || "Dirección del laboratorio";
+  const labName = registration?.lab?.name || "Laboratorio";
+  const labPhone = registration?.lab?.phone || "+57 300 000 0000";
+  const labEmail = registration?.lab?.email || "contacto@laboratorio.com";
+  const labAddress = registration?.lab?.address || "Dirección del laboratorio";
+  const labLogo = registration?.lab?.logo || null;
+  const leaseExpiresAt = registration?.leaseExpiresAt ? new Date(registration.leaseExpiresAt) : null;
+  const daysRemaining = leaseExpiresAt ? Math.max(0, Math.ceil((leaseExpiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : null;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      {/* ===== LEASE STATUS BANNER ===== */}
+      {daysRemaining !== null && daysRemaining <= 30 && (
+        <div className="bg-destructive/10 text-destructive text-xs md:text-sm py-2 px-4 md:px-10 flex items-center justify-center gap-2">
+          <AlertTriangle className="h-4 w-4" />
+          <span>Su arrendamiento vence en <strong>{daysRemaining} días</strong>. Renueve su plan para evitar la suspensión del servicio.</span>
+        </div>
+      )}
+
       {/* ===== TOP BAR ===== */}
       <div className="bg-primary text-primary-foreground text-xs md:text-sm py-2 px-4 md:px-10 flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -78,8 +69,8 @@ export default function LabPortal() {
       {/* ===== HEADER / NAV ===== */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border px-4 md:px-10 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {config?.lab?.logo ? (
-            <img src={config.lab.logo} alt="Logo" className="h-12 w-12 rounded-full object-cover border-2 border-primary/20" />
+          {labLogo ? (
+            <img src={labLogo} alt="Logo" className="h-12 w-12 rounded-full object-cover border-2 border-primary/20" />
           ) : (
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
               <Microscope className="h-6 w-6 text-primary" />
@@ -294,8 +285,8 @@ export default function LabPortal() {
       <footer className="bg-primary text-primary-foreground py-8 px-4 md:px-10 mt-auto">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            {config?.lab?.logo ? (
-              <img src={config.lab.logo} alt="Logo" className="h-8 w-8 rounded-full object-cover border border-primary-foreground/30" />
+            {labLogo ? (
+              <img src={labLogo} alt="Logo" className="h-8 w-8 rounded-full object-cover border border-primary-foreground/30" />
             ) : (
               <Microscope className="h-6 w-6" />
             )}

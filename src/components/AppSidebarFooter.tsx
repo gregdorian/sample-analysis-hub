@@ -11,11 +11,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import ProfileDialog from "./ProfileDialog";
+import { useLabAuth } from "@/hooks/use-lab-auth";
 
 const DEFAULT_PROFILE = { name: "Admin", email: "admin@labclinico.com", photo: null as string | null };
 
 export default function AppSidebarFooter() {
   const navigate = useNavigate();
+  const { logout, auth } = useLabAuth();
   const [profileOpen, setProfileOpen] = useState(false);
   const [profile, setProfile] = useState(DEFAULT_PROFILE);
 
@@ -24,7 +26,10 @@ export default function AppSidebarFooter() {
     if (saved) {
       try { setProfile(JSON.parse(saved)); } catch {}
     }
-  }, []);
+    if (auth.userName && auth.userEmail) {
+      setProfile(p => ({ ...p, name: auth.userName || p.name, email: auth.userEmail || p.email }));
+    }
+  }, [auth]);
 
   const handleSaveProfile = (updated: typeof DEFAULT_PROFILE) => {
     setProfile(updated);
@@ -32,6 +37,7 @@ export default function AppSidebarFooter() {
   };
 
   const handleLogout = () => {
+    logout();
     navigate("/login");
   };
 

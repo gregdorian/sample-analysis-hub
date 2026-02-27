@@ -59,7 +59,7 @@ const PricingSection = () => {
           <li>Almacenamiento seguro en la nube</li>
         </ul>
         <div className="text-center mt-5">
-          <Button className="bg-green-700 hover:bg-green-800 text-white rounded-full px-10" size="lg" onClick={() => navigate("/login")}>
+          <Button className="bg-green-700 hover:bg-green-800 text-white rounded-full px-10" size="lg" onClick={() => navigate("/registro-laboratorio")}>
             Cotizar Ahora
           </Button>
         </div>
