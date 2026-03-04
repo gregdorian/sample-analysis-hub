@@ -1,9 +1,10 @@
-
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import QuoteFormDialog from "./QuoteFormDialog";
 
 const PricingSection = () => {
-  const navigate = useNavigate();
+  const [quoteOpen, setQuoteOpen] = useState(false);
+
   return (
     <section className="py-12 px-4 md:px-16 bg-white dark:bg-background">
       <h2 className="text-2xl md:text-3xl font-bold text-center text-green-800 dark:text-white mb-2">
@@ -59,11 +60,13 @@ const PricingSection = () => {
           <li>Almacenamiento seguro en la nube</li>
         </ul>
         <div className="text-center mt-5">
-          <Button className="bg-green-700 hover:bg-green-800 text-white rounded-full px-10" size="lg" onClick={() => navigate("/registro-laboratorio")}>
+          <Button className="bg-green-700 hover:bg-green-800 text-white rounded-full px-10" size="lg" onClick={() => setQuoteOpen(true)}>
             Cotizar Ahora
           </Button>
         </div>
       </div>
+
+      <QuoteFormDialog open={quoteOpen} onOpenChange={setQuoteOpen} />
     </section>
   );
 };

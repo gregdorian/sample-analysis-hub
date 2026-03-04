@@ -36,6 +36,9 @@ export default function LabPortal() {
   const labEmail = registration?.lab?.email || "contacto@laboratorio.com";
   const labAddress = registration?.lab?.address || "Dirección del laboratorio";
   const labLogo = registration?.lab?.logo || null;
+  const labDescription = registration?.lab?.description || "";
+  const labRuc = registration?.lab?.ruc || "";
+  const labHost = localStorage.getItem("lab-host") || "";
   const leaseExpiresAt = registration?.leaseExpiresAt ? new Date(registration.leaseExpiresAt) : null;
   const daysRemaining = leaseExpiresAt ? Math.max(0, Math.ceil((leaseExpiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : null;
 
@@ -78,7 +81,10 @@ export default function LabPortal() {
           )}
           <div>
             <h1 className="text-xl md:text-2xl font-extrabold text-primary leading-tight">{labName}</h1>
-            <p className="text-xs text-muted-foreground hidden md:block">Laboratorio Clínico</p>
+            <p className="text-xs text-muted-foreground hidden md:block">
+              {labHost && <span className="font-mono">{labHost}.gmintlab.com</span>}
+              {!labHost && "Laboratorio Clínico"}
+            </p>
           </div>
         </div>
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
@@ -97,6 +103,12 @@ export default function LabPortal() {
           <div className="flex-1 space-y-6">
             <p className="text-sm uppercase tracking-widest text-muted-foreground font-semibold">Conozca aquí sus</p>
             <h2 className="text-4xl md:text-6xl font-black text-primary leading-tight">RESULTADOS</h2>
+            {labDescription && (
+              <p className="text-muted-foreground max-w-md italic">{labDescription}</p>
+            )}
+            {labRuc && (
+              <p className="text-xs text-muted-foreground">NIT/RUC: {labRuc}</p>
+            )}
             <p className="text-muted-foreground max-w-md">
               Acceda a los resultados de sus exámenes de laboratorio de forma rápida, segura y confidencial.
             </p>
