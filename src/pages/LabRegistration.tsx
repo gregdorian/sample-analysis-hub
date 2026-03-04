@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,7 +48,7 @@ const EXAM_CATEGORIES = [
 
 export default function LabRegistration() {
   const navigate = useNavigate();
-  const { completeRegistration } = useLabAuth();
+  const { completeRegistration, isRegistered } = useLabAuth();
   const [step, setStep] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -81,6 +81,11 @@ export default function LabRegistration() {
   const [cardCvv, setCardCvv] = useState("");
   const [paymentProcessing, setPaymentProcessing] = useState(false);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
+
+  // Si ya está registrado, redirigir al portal
+  if (isRegistered) {
+    return <Navigate to="/laboratorio" replace />;
+  }
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -182,7 +187,16 @@ export default function LabRegistration() {
       status: "active" as const,
     };
     completeRegistration(data);
-    toast({ title: "¡Registro completado!", description: `El laboratorio "${labName}" ha sido registrado exitosamente.` });
+
+    // Generar slug del laboratorio como "host"
+    const labSlug = labName
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+    localStorage.setItem("lab-host", labSlug);
+
+    toast({ title: "¡Registro completado!", description: `El laboratorio "${labName}" ha sido registrado. Su host: ${labSlug}` });
     navigate("/laboratorio");
   };
 
