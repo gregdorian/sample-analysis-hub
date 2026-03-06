@@ -30,20 +30,20 @@ export function SamplesTable({ samples }: SamplesTableProps) {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-200">
-                <th className="text-left py-3 px-4 font-medium text-slate-600">ID Muestra</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Paciente</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Orden</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Examen</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Área</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Prioridad</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Estado</th>
-                <th className="text-left py-3 px-4 font-medium text-slate-600">Fecha</th>
+              <tr className="border-b border-border">
+                <th className="text-left py-3 px-4 font-medium text-muted-foreground">ID Muestra</th>
+                <th className="text-left py-3 px-4 font-medium text-muted-foreground">Paciente</th>
+                <th className="text-left py-3 px-4 font-medium text-muted-foreground">Orden</th>
+                <th className="text-left py-3 px-4 font-medium text-muted-foreground">Examen</th>
+                <th className="text-left py-3 px-4 font-medium text-muted-foreground">Área</th>
+                <th className="text-left py-3 px-4 font-medium text-muted-foreground">Prioridad</th>
+                <th className="text-left py-3 px-4 font-medium text-muted-foreground">Estado</th>
+                <th className="text-left py-3 px-4 font-medium text-muted-foreground">Fecha</th>
               </tr>
             </thead>
             <tbody>
               {samples.map((sample) => (
-                <tr key={sample.id} className="border-b border-slate-100 hover:bg-slate-50">
+                <tr key={sample.id} className="border-b border-border hover:bg-muted/40">
                   <td className="py-3 px-4 font-medium">{sample.id}</td>
                   <td className="py-3 px-4">{sample.patientName}</td>
                   <td className="py-3 px-4">{sample.orderNumber}</td>

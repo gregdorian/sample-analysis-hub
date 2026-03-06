@@ -159,7 +159,7 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <TestTube className="h-5 w-5 text-blue-600" />
+          <TestTube className="h-5 w-5 text-primary" />
           Formulario de Recepción
         </CardTitle>
         <CardDescription>Complete la información y agregue exámenes a realizar</CardDescription>
@@ -180,120 +180,13 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
                 id="order-number"
                 value={orderNumber}
                 readOnly
-                className="bg-slate-100 text-slate-500"
+                className="bg-muted text-muted-foreground"
               />
             </div>
           </div>
-
-          {/* --- Formulario de examen detalle (maestro-detalle) --- */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-            <div className="space-y-2">
-              <Label htmlFor="exam-type">Tipo de Examen *</Label>
-              <Select
-                value={examForm.examType}
-                onValueChange={(val) => setExamForm((f) => ({ ...f, examType: val }))}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccione examen" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Hemograma Completo">Hemograma Completo</SelectItem>
-                  <SelectItem value="Glucosa">Glucosa</SelectItem>
-                  <SelectItem value="Perfil Lipídico">Perfil Lipídico</SelectItem>
-                  <SelectItem value="Función Renal">Función Renal</SelectItem>
-                  <SelectItem value="Función Hepática">Función Hepática</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="sample-type">Tipo de Muestra *</Label>
-              <Select
-                value={examForm.sampleType}
-                onValueChange={(val) => setExamForm((f) => ({ ...f, sampleType: val }))}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccione muestra" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Sangre">Sangre</SelectItem>
-                  <SelectItem value="Orina">Orina</SelectItem>
-                  <SelectItem value="Heces">Heces</SelectItem>
-                  <SelectItem value="Saliva">Saliva</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="area">Área Asignada *</Label>
-              <Select
-                value={examForm.area}
-                onValueChange={(val) => setExamForm((f) => ({ ...f, area: val }))}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccione área" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Hematología">Hematología</SelectItem>
-                  <SelectItem value="Bioquímica">Bioquímica</SelectItem>
-                  <SelectItem value="Microbiología">Microbiología</SelectItem>
-                  <SelectItem value="Inmunología">Inmunología</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="priority">Prioridad *</Label>
-              <Select
-                value={examForm.priority}
-                onValueChange={(val) => setExamForm((f) => ({ ...f, priority: val }))}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccione prioridad" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Normal">Normal</SelectItem>
-                  <SelectItem value="Urgente">Urgente</SelectItem>
-                  <SelectItem value="STAT">STAT</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="flex gap-2 mt-2">
-            <Button
-              type="button"
-              variant={editingExamId ? "secondary" : "default"}
-              onClick={handleAddExam}
-              className="mt-2"
-            >
-              {editingExamId ? "Actualizar examen" : "Agregar examen"}
-            </Button>
-            {editingExamId && (
-              <Button
-                type="button"
-                variant="outline"
-                className="mt-2"
-                onClick={() => {
-                  setEditingExamId(null);
-                  setExamForm(emptyExamForm);
-                }}
-              >
-                Cancelar edición
-              </Button>
-            )}
-          </div>
-
-          {/* Tabla de examenes agregados */}
-          <ExamItemTable
-            items={examItems}
-            onEdit={handleEditExam}
-            onRemove={handleRemoveExam}
-          />
-
+...
           <div className="flex justify-end mt-6">
             <Button
-              className="bg-blue-600 hover:bg-blue-700"
               type="submit"
               disabled={!canRegisterSample}
             >

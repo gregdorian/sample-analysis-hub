@@ -19,9 +19,9 @@ interface ExamItemTableProps {
 export function ExamItemTable({ items, onEdit, onRemove }: ExamItemTableProps) {
   return (
     <div className="mt-4">
-      <table className="w-full border text-sm bg-white rounded shadow">
+      <table className="w-full border border-border text-sm bg-card text-card-foreground rounded shadow-sm">
         <thead>
-          <tr className="bg-slate-100">
+          <tr className="bg-muted text-muted-foreground">
             <th className="px-2 py-1">#</th>
             <th className="px-2 py-1">Tipo de Examen</th>
             <th className="px-2 py-1">Tipo de Muestra</th>
@@ -37,7 +37,7 @@ export function ExamItemTable({ items, onEdit, onRemove }: ExamItemTableProps) {
             </tr>
           )}
           {items.map((item, idx) => (
-            <tr key={item.id} className="hover:bg-slate-50">
+            <tr key={item.id} className="hover:bg-muted/40">
               <td className="px-2 py-1">{idx + 1}</td>
               <td className="px-2 py-1">{item.examType}</td>
               <td className="px-2 py-1">{item.sampleType}</td>

@@ -55,7 +55,7 @@ export default function AppSidebarMastersMenu({
     <SidebarGroup>
       <Collapsible open={open} onOpenChange={setOpen}>
         <CollapsibleTrigger asChild>
-          <SidebarGroupLabel className="flex items-center justify-between cursor-pointer hover:bg-slate-100 rounded-md p-2">
+          <SidebarGroupLabel className="flex items-center justify-between cursor-pointer hover:bg-sidebar-accent rounded-md p-2">
             Maestros
             <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
           </SidebarGroupLabel>
@@ -71,7 +71,7 @@ export default function AppSidebarMastersMenu({
                   >
                     <button
                       onClick={() => handleMastersClick(item.key)}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 data-[active=true]:bg-blue-100 data-[active=true]:text-blue-700"
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground"
                       type="button"
                     >
                       <item.icon className="h-5 w-5" />

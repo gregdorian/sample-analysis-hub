@@ -7,10 +7,10 @@ export default function AppSidebarHeader() {
     <SidebarHeader>
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2">
-          <Activity className="h-8 w-8 text-blue-600" />
+          <Activity className="h-8 w-8 text-primary" />
           <div>
-            <h1 className="text-xl font-bold text-slate-800">LabClínico</h1>
-            <p className="text-sm text-slate-600">Sistema de Gestión</p>
+            <h1 className="text-xl font-bold text-sidebar-foreground">LabClínico</h1>
+            <p className="text-sm text-sidebar-foreground/70">Sistema de Gestión</p>
           </div>
         </div>
         <div className="p-1">
