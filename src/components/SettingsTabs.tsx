@@ -32,7 +32,7 @@ export default function SettingsTabs() {
       <h1 className="text-2xl font-bold mb-4">Configuración</h1>
       <Tabs value={tab} onValueChange={setTab} className="w-full" orientation="vertical">
         <div className="flex gap-6">
-          <TabsList className="flex flex-col items-stretch h-auto bg-muted/50 rounded-lg p-1 min-w-[220px] shrink-0">
+          <TabsList className="flex flex-col items-stretch h-auto bg-muted/50 rounded-lg p-1 min-w-[220px] shrink-0 sticky top-6 self-start">
             {SETTINGS_CATEGORIES.map(({ key, label }) => (
               <TabsTrigger
                 key={key}

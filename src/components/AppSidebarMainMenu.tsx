@@ -19,7 +19,7 @@ const mainMenuItems = [
   { title: "Análisis de Muestras", icon: Microscope, key: "analysis" },
   { title: "Reportes", icon: FileText, key: "reports" },
   { title: "Facturación", icon: CreditCard, key: "billing" },
-  { title: "Portal de Citas (Pacientes)", icon: Globe, key: "portal-citas" },
+  
 ];
 
 export default function AppSidebarMainMenu({
