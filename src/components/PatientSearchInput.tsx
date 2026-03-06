@@ -104,7 +104,7 @@ export function PatientSearchInput({ value, onPatientSelected }: PatientSearchIn
     <div className="space-y-2">
       <Label htmlFor="patient-search">Buscar Paciente *</Label>
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           id="patient-search"
           autoComplete="off"
@@ -124,7 +124,7 @@ export function PatientSearchInput({ value, onPatientSelected }: PatientSearchIn
 
       {/* Mostrar datos del paciente seleccionado */}
       {selectedPatient && (
-        <div className="mt-2 rounded bg-slate-50 border p-3 text-slate-800 space-y-1 shadow-sm">
+        <div className="mt-2 rounded bg-muted border border-border p-3 text-foreground space-y-1 shadow-sm">
           <div>
             <span className="font-semibold">Nombre y Apellido:&nbsp;</span>
             {selectedPatient.nombre} {selectedPatient.apellido}
@@ -160,7 +160,7 @@ export function PatientSearchInput({ value, onPatientSelected }: PatientSearchIn
               </Button>
             </DialogClose>
             <DialogClose asChild>
-              <Button type="button" className="bg-blue-600 ml-2" onClick={() => setShowModal(false)}>
+              <Button type="button" className="ml-2" onClick={() => setShowModal(false)}>
                 Registrar
               </Button>
             </DialogClose>

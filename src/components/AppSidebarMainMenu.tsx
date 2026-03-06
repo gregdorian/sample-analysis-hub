@@ -1,5 +1,5 @@
 
-import { ChevronDown, BarChart3, Users, TestTube, Microscope, FileText, CreditCard, CalendarCheck, Globe } from "lucide-react";
+import { ChevronDown, BarChart3, Users, TestTube, Microscope, FileText, CreditCard, CalendarCheck } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -35,7 +35,7 @@ export default function AppSidebarMainMenu({
     <SidebarGroup>
       <Collapsible open={open} onOpenChange={setOpen}>
         <CollapsibleTrigger asChild>
-          <SidebarGroupLabel className="flex items-center justify-between cursor-pointer hover:bg-slate-100 rounded-md p-2">
+          <SidebarGroupLabel className="flex items-center justify-between cursor-pointer hover:bg-sidebar-accent rounded-md p-2">
             Módulos Principales
             <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
           </SidebarGroupLabel>
@@ -51,7 +51,7 @@ export default function AppSidebarMainMenu({
                   >
                     <button
                       onClick={() => onSectionChange(item.key)}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 data-[active=true]:bg-blue-100 data-[active=true]:text-blue-700"
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground"
                     >
                       <item.icon className="h-5 w-5" />
                       <span>{item.title}</span>

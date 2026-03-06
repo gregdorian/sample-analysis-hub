@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TestTube, Search, CheckCircle } from "lucide-react";
+import { TestTube, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ExamItemTable, ExamItem } from "./ExamItemTable";
 import { PatientSearchInput } from "./PatientSearchInput";
@@ -27,37 +27,27 @@ interface SampleReceptionFormProps {
   samplesCount: number;
 }
 
-const emptyExamForm: Omit<ExamItem, 'id'> = {
+const emptyExamForm: Omit<ExamItem, "id"> = {
   examType: "",
   sampleType: "",
   area: "",
-  priority: ""
+  priority: "",
 };
 
 export function SampleReceptionForm({ onAddSample, samplesCount }: SampleReceptionFormProps) {
   const { toast } = useToast();
 
-  // Estado de paciente recibe un objeto Patient o string si es manual
   const [selectedPatient, setSelectedPatient] = useState<any>(null);
-  const [patientSearch, setPatientSearch] = useState(""); // Manténlo para compatibilidad con Exam
-  // Examenes agregados (detalle)
+  const [patientSearch, setPatientSearch] = useState("");
   const [examItems, setExamItems] = useState<ExamItem[]>([]);
-  // Estado para manejar el formulario de un examen
-  const [examForm, setExamForm] = useState<Omit<ExamItem, 'id'>>(emptyExamForm);
+  const [examForm, setExamForm] = useState<Omit<ExamItem, "id">>(emptyExamForm);
   const [editingExamId, setEditingExamId] = useState<string | null>(null);
 
-  // Generar número de orden automáticamente
   const orderNumber = `ORD${String(samplesCount + 1).padStart(3, "0")}`;
 
-  // Validaciones
   const canAddExam = examForm.examType && examForm.sampleType && examForm.area && examForm.priority;
-  // Actualizamos: Solo considerar exámenes y paciente cuando haya al menos uno en examItems y un paciente seleccionado
-  const canRegisterSample = (
-    selectedPatient &&
-    examItems.length > 0
-  );
+  const canRegisterSample = selectedPatient && examItems.length > 0;
 
-  // Manejar agregar/examinar un examen detalle
   const handleAddExam = () => {
     if (!canAddExam) {
       toast({
@@ -67,20 +57,17 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
       });
       return;
     }
+
     if (editingExamId) {
-      // Modificando un examen existente
       setExamItems((prev) =>
-        prev.map((item) =>
-          item.id === editingExamId ? { ...item, ...examForm } : item
-        )
+        prev.map((item) => (item.id === editingExamId ? { ...item, ...examForm } : item))
       );
       setEditingExamId(null);
       toast({ title: "Examen modificado", variant: "default" });
     } else {
-      // Agregando un nuevo examen
       setExamItems((prev) => [
         ...prev,
-        { ...examForm, id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}` }
+        { ...examForm, id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}` },
       ]);
       toast({ title: "Examen agregado", variant: "default" });
     }
@@ -88,7 +75,6 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
     setExamForm(emptyExamForm);
   };
 
-  // Editar
   const handleEditExam = (item: ExamItem) => {
     setExamForm({
       examType: item.examType,
@@ -99,10 +85,8 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
     setEditingExamId(item.id);
   };
 
-  // Quitar
   const handleRemoveExam = (id: string) => {
     setExamItems((prev) => prev.filter((item) => item.id !== id));
-    // Al quitar exam, limpiar edición si estaba editando ese
     if (editingExamId === id) {
       setExamForm(emptyExamForm);
       setEditingExamId(null);
@@ -110,11 +94,9 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
     toast({ title: "Examen eliminado", variant: "destructive" });
   };
 
-  // Registrar muestra
   const handleRegisterSample = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Si NO hay exámenes, mostrar la validación y NO procesar
     if (examItems.length === 0 || !selectedPatient) {
       toast({
         title: "Formulario incompleto",
@@ -124,10 +106,9 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
       return;
     }
 
-    // Procesar registro de MUESTRA(S)
     examItems.forEach((item) => {
       const newSample: Sample = {
-        id: `M${String(samplesCount + 1).padStart(3, '0')}`,
+        id: `M${String(samplesCount + 1).padStart(3, "0")}`,
         patientName: selectedPatient ? `${selectedPatient.nombre} ${selectedPatient.apellido}` : patientSearch,
         patientId: selectedPatient ? selectedPatient.nroIdentificacion : "---",
         orderNumber,
@@ -135,7 +116,7 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
         sampleType: item.sampleType,
         area: item.area,
         priority: item.priority,
-        receptionDate: new Date().toISOString().split('T')[0],
+        receptionDate: new Date().toISOString().split("T")[0],
         status: "Recibida",
       };
       onAddSample(newSample);
@@ -147,7 +128,6 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
       variant: "default",
     });
 
-    // Limpiar formulario: esto NO debe disparar ninguna validación de registro
     setPatientSearch("");
     setSelectedPatient(null);
     setExamItems([]);
@@ -159,7 +139,7 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <TestTube className="h-5 w-5 text-blue-600" />
+          <TestTube className="h-5 w-5 text-primary" />
           Formulario de Recepción
         </CardTitle>
         <CardDescription>Complete la información y agregue exámenes a realizar</CardDescription>
@@ -171,21 +151,15 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
               value={patientSearch}
               onPatientSelected={(p) => {
                 setSelectedPatient(p);
-                setPatientSearch(p ? `${p.nombre} ${p.apellido}` : ""); // Sync for clarity
+                setPatientSearch(p ? `${p.nombre} ${p.apellido}` : "");
               }}
             />
             <div className="space-y-2">
               <Label htmlFor="order-number">Número de Orden *</Label>
-              <Input
-                id="order-number"
-                value={orderNumber}
-                readOnly
-                className="bg-slate-100 text-slate-500"
-              />
+              <Input id="order-number" value={orderNumber} readOnly className="bg-muted text-muted-foreground" />
             </div>
           </div>
 
-          {/* --- Formulario de examen detalle (maestro-detalle) --- */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
             <div className="space-y-2">
               <Label htmlFor="exam-type">Tipo de Examen *</Label>
@@ -226,11 +200,7 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
             </div>
             <div className="space-y-2">
               <Label htmlFor="area">Área Asignada *</Label>
-              <Select
-                value={examForm.area}
-                onValueChange={(val) => setExamForm((f) => ({ ...f, area: val }))}
-                required
-              >
+              <Select value={examForm.area} onValueChange={(val) => setExamForm((f) => ({ ...f, area: val }))} required>
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccione área" />
                 </SelectTrigger>
@@ -260,13 +230,9 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
               </Select>
             </div>
           </div>
+
           <div className="flex gap-2 mt-2">
-            <Button
-              type="button"
-              variant={editingExamId ? "secondary" : "default"}
-              onClick={handleAddExam}
-              className="mt-2"
-            >
+            <Button type="button" variant={editingExamId ? "secondary" : "default"} onClick={handleAddExam} className="mt-2">
               {editingExamId ? "Actualizar examen" : "Agregar examen"}
             </Button>
             {editingExamId && (
@@ -284,19 +250,10 @@ export function SampleReceptionForm({ onAddSample, samplesCount }: SampleRecepti
             )}
           </div>
 
-          {/* Tabla de examenes agregados */}
-          <ExamItemTable
-            items={examItems}
-            onEdit={handleEditExam}
-            onRemove={handleRemoveExam}
-          />
+          <ExamItemTable items={examItems} onEdit={handleEditExam} onRemove={handleRemoveExam} />
 
           <div className="flex justify-end mt-6">
-            <Button
-              className="bg-blue-600 hover:bg-blue-700"
-              type="submit"
-              disabled={!canRegisterSample}
-            >
+            <Button type="submit" disabled={!canRegisterSample}>
               <CheckCircle className="h-4 w-4 mr-2" />
               Registrar Muestra
             </Button>

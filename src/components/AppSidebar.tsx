@@ -26,7 +26,7 @@ export function AppSidebar({
 
   return (
     <div className="relative h-full">
-      <Sidebar className="border-r border-slate-200">
+      <Sidebar className="border-r border-sidebar-border">
         <AppSidebarHeader />
         <SidebarContent>
           <AppSidebarMainMenu activeSection={activeSection} onSectionChange={onSectionChange} />
@@ -41,7 +41,7 @@ export function AppSidebar({
       {/* Botón flotante restaurar cuando sidebar está colapsado */}
       {state === "collapsed" && (
         <div className="fixed top-4 left-2 z-50 md:block hidden">
-          <SidebarTrigger className="shadow-lg border bg-white hover:bg-slate-100" />
+          <SidebarTrigger className="shadow-lg border border-sidebar-border bg-sidebar hover:bg-sidebar-accent" />
         </div>
       )}
     </div>

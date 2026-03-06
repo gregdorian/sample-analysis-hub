@@ -49,25 +49,25 @@ export function DashboardContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">Dashboard</h1>
-          <p className="text-slate-600">Resumen de actividades del laboratorio</p>
+          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-muted-foreground">Resumen de actividades del laboratorio</p>
         </div>
         <div className="text-right">
-          <p className="text-sm text-slate-500">Última actualización</p>
-          <p className="text-sm font-medium">{new Date().toLocaleString()}</p>
+          <p className="text-sm text-muted-foreground">Última actualización</p>
+          <p className="text-sm font-medium text-foreground">{new Date().toLocaleString()}</p>
         </div>
       </div>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
-          <Card key={index} className="border-0 shadow-sm">
+          <Card key={index} className="shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">{stat.title}</p>
-                  <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
-                  <p className={`text-sm ${stat.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">{stat.title}</p>
+                  <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                  <p className={`text-sm ${stat.change.startsWith('+') ? 'text-emerald-600' : 'text-destructive'}`}>
                     {stat.change} vs ayer
                   </p>
                 </div>
@@ -90,10 +90,10 @@ export function DashboardContent() {
           <CardContent>
             <div className="space-y-4">
               {recentSamples.map((sample) => (
-                <div key={sample.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                <div key={sample.id} className="flex items-center justify-between p-3 bg-muted/40 rounded-lg">
                   <div>
-                    <p className="font-medium text-slate-800">{sample.patient}</p>
-                    <p className="text-sm text-slate-600">{sample.exam}</p>
+                    <p className="font-medium text-foreground">{sample.patient}</p>
+                    <p className="text-sm text-muted-foreground">{sample.exam}</p>
                   </div>
                   <div className="text-right">
                     <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
@@ -103,7 +103,7 @@ export function DashboardContent() {
                     }`}>
                       {sample.status}
                     </span>
-                    <p className="text-sm text-slate-500 mt-1">{sample.time}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{sample.time}</p>
                   </div>
                 </div>
               ))}
@@ -127,9 +127,9 @@ export function DashboardContent() {
                 <div key={area.area} className="flex items-center gap-3">
                   <div className={`w-3 h-3 rounded-full ${area.color}`}></div>
                   <div className="flex-1">
-                    <p className="font-medium text-slate-800">{area.area}</p>
+                    <p className="font-medium text-foreground">{area.area}</p>
                   </div>
-                  <span className="text-sm font-medium text-slate-600">{area.count}</span>
+                  <span className="text-sm font-medium text-muted-foreground">{area.count}</span>
                 </div>
               ))}
             </div>
