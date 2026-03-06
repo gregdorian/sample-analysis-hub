@@ -59,7 +59,7 @@ export default function SettingsNotifications() {
           Configure alertas o notificaciones, canales, y preferencias de envío (correo, SMS, etc).
         </p>
         {/* Formulario simulado de notificiación */}
-        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 max-w-xl">
+        <div className="bg-card border rounded-lg p-4 max-w-xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
             <div>
               <Label>Tipo de Notificación</Label>

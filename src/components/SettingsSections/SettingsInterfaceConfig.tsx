@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -20,15 +20,23 @@ const THEMES = [
   { value: "corporate", label: "Corporativo Azul", icon: Palette },
 ];
 
+function loadInterfaceConfig() {
+  try {
+    const raw = localStorage.getItem("interface-config");
+    if (raw) return JSON.parse(raw);
+  } catch { /* ignore */ }
+  return null;
+}
+
 export default function SettingsInterfaceConfig() {
-  const [language, setLanguage] = useState("es");
-  const [labName, setLabName] = useState("LabClínico");
-  const [logo, setLogo] = useState<string | null>(null);
+  const saved = loadInterfaceConfig();
+  const [language, setLanguage] = useState(saved?.language || "es");
+  const [labName, setLabName] = useState(saved?.labName || "LabClínico");
+  const [logo, setLogo] = useState<string | null>(saved?.logo || null);
   const logoInputRef = useRef<HTMLInputElement | null>(null);
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
 
-  // Maneja carga y preview del logo
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
@@ -40,8 +48,9 @@ export default function SettingsInterfaceConfig() {
     }
   };
 
-  // Simulación de guardado de cambios
   const handleSave = () => {
+    const config = { labName, logo, language, theme };
+    localStorage.setItem("interface-config", JSON.stringify(config));
     toast({
       title: "Configuración guardada",
       description: `Nombre: ${labName} | Idioma: ${LANGUAGES.find((l) => l.value === language)?.label} | Tema: ${THEMES.find((t) => t.value === theme)?.label}` + (logo ? " | Logo actualizado" : ""),
@@ -58,7 +67,7 @@ export default function SettingsInterfaceConfig() {
         <p className="text-muted-foreground mb-4">
           Personalice la apariencia de la interfaz, menús rápidos, temas, widgets y accesos directos.
         </p>
-        <div className="max-w-md border rounded-lg bg-slate-50 p-4 space-y-6">
+        <div className="max-w-md border rounded-lg bg-card text-card-foreground p-4 space-y-6">
           <div>
             <Label htmlFor="lab-name">Nombre o razón social del laboratorio</Label>
             <Input
@@ -81,7 +90,7 @@ export default function SettingsInterfaceConfig() {
                     className="w-16 h-16 object-contain rounded border"
                   />
                 ) : (
-                  <div className="w-16 h-16 flex items-center justify-center rounded border bg-slate-100 text-slate-400">
+                  <div className="w-16 h-16 flex items-center justify-center rounded border bg-muted text-muted-foreground">
                     <ImageIcon className="w-8 h-8" />
                   </div>
                 )}
@@ -144,7 +153,7 @@ export default function SettingsInterfaceConfig() {
                   value={t.value}
                   aria-label={t.label}
                   variant={theme === t.value ? "outline" : "default"}
-                  className={`px-5 py-2 flex items-center gap-2 data-[state=on]:bg-blue-100`}
+                  className={`px-5 py-2 flex items-center gap-2 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground`}
                 >
                   <t.icon className="h-5 w-5" />
                   {t.label}

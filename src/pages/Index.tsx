@@ -33,7 +33,7 @@ const Index = () => {
       case "billing":
         return <Billing />;
       case "portal-citas":
-        return <PatientAppointmentModule />;
+        return <DashboardContent />;
       case "config-general":
         return <SettingsTabs />;
       default:
