@@ -94,10 +94,10 @@ export default function SettingsDefaultValues() {
 
             <div className="space-y-2">
               <Label>Examen predeterminado</Label>
-              <Select value={values.examType} onValueChange={v => update("examType", v)}>
+              <Select value={values.examType || "none"} onValueChange={v => update("examType", v === "none" ? "" : v)}>
                 <SelectTrigger><SelectValue placeholder="Ninguno" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Ninguno</SelectItem>
+                  <SelectItem value="none">Ninguno</SelectItem>
                   {EXAM_TYPES.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
                 </SelectContent>
               </Select>
