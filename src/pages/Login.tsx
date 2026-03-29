@@ -13,6 +13,11 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [mode, setMode] = useState<"login" | "recover" | "reset">("login");
+  const [recoveryEmail, setRecoveryEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const { toast } = useToast();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -29,6 +34,44 @@ export default function Login() {
     }
   }
 
+  function handleRecover(e: React.FormEvent) {
+    e.preventDefault();
+    if (!registration) {
+      setError("No hay un laboratorio registrado.");
+      return;
+    }
+    if (recoveryEmail !== registration.plan.admin.email) {
+      setError("El correo no coincide con el administrador registrado.");
+      return;
+    }
+    setError("");
+    setMode("reset");
+    toast({ title: "Correo verificado", description: "Ingrese su nueva contraseña." });
+  }
+
+  function handleReset(e: React.FormEvent) {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      setError("La contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+    if (!registration) return;
+    const updated = {
+      ...registration,
+      plan: { ...registration.plan, admin: { ...registration.plan.admin, password: newPassword } },
+    };
+    completeRegistration(updated);
+    setError("");
+    setMode("login");
+    setNewPassword("");
+    setConfirmPassword("");
+    toast({ title: "Contraseña actualizada", description: "Ahora puede ingresar con su nueva contraseña." });
+  }
+
   return (
     <div className="min-h-screen bg-muted/30 flex items-center justify-center px-4">
       <div className="bg-background border border-border rounded-xl shadow-lg w-full max-w-md p-8">
@@ -38,51 +81,78 @@ export default function Login() {
             {registration?.lab?.name || "G-Mint Lab"}
           </h1>
         </div>
-        <p className="text-center text-sm text-muted-foreground mb-6">
-          Ingrese sus credenciales de administrador para acceder al panel de gestión.
-        </p>
 
-        {!isRegistered || !isPaid ? (
-          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-center space-y-3">
-            <p className="text-sm text-destructive font-medium">
-              No hay un laboratorio registrado con pago activo.
+        {mode === "login" && (
+          <>
+            <p className="text-center text-sm text-muted-foreground mb-6">
+              Ingrese sus credenciales de administrador para acceder al panel de gestión.
             </p>
-            <Button variant="outline" onClick={() => navigate("/registro-laboratorio")} className="gap-2">
-              Registrar Laboratorio
-            </Button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            <div>
-              <label className="text-sm text-foreground block mb-1">Email</label>
-              <Input
-                type="email"
-                required
-                autoFocus
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="admin@laboratorio.com"
-              />
-            </div>
-            <div>
-              <label className="text-sm text-foreground block mb-1">Contraseña</label>
-              <Input
-                type="password"
-                required
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="••••••••"
-              />
-            </div>
-            {error && (
-              <div className="bg-destructive/10 text-destructive p-2 rounded text-center text-sm">
-                {error}
+            {!isRegistered || !isPaid ? (
+              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-center space-y-3">
+                <p className="text-sm text-destructive font-medium">
+                  No hay un laboratorio registrado con pago activo.
+                </p>
+                <Button variant="outline" onClick={() => navigate("/registro-laboratorio")} className="gap-2">
+                  Registrar Laboratorio
+                </Button>
               </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                <div>
+                  <label className="text-sm text-foreground block mb-1">Email</label>
+                  <Input type="email" required autoFocus value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@laboratorio.com" />
+                </div>
+                <div>
+                  <label className="text-sm text-foreground block mb-1">Contraseña</label>
+                  <Input type="password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" />
+                </div>
+                {error && <div className="bg-destructive/10 text-destructive p-2 rounded text-center text-sm">{error}</div>}
+                <Button type="submit" className="gap-2"><LogIn className="h-4 w-4" /> Ingresar</Button>
+                <button type="button" onClick={() => { setError(""); setMode("recover"); }} className="text-sm text-primary hover:underline mt-1 text-center">
+                  ¿Olvidó su contraseña?
+                </button>
+              </form>
             )}
-            <Button type="submit" className="gap-2">
-              <LogIn className="h-4 w-4" /> Ingresar
-            </Button>
-          </form>
+          </>
+        )}
+
+        {mode === "recover" && (
+          <>
+            <p className="text-center text-sm text-muted-foreground mb-6">
+              Ingrese el correo electrónico registrado para recuperar su contraseña.
+            </p>
+            <form onSubmit={handleRecover} className="flex flex-col gap-5">
+              <div>
+                <label className="text-sm text-foreground block mb-1">Correo electrónico</label>
+                <Input type="email" required autoFocus value={recoveryEmail} onChange={e => setRecoveryEmail(e.target.value)} placeholder="admin@laboratorio.com" />
+              </div>
+              {error && <div className="bg-destructive/10 text-destructive p-2 rounded text-center text-sm">{error}</div>}
+              <Button type="submit" className="gap-2"><Mail className="h-4 w-4" /> Verificar correo</Button>
+              <button type="button" onClick={() => { setError(""); setMode("login"); }} className="text-sm text-muted-foreground hover:text-foreground mt-1 text-center">
+                Volver al inicio de sesión
+              </button>
+            </form>
+          </>
+        )}
+
+        {mode === "reset" && (
+          <>
+            <p className="text-center text-sm text-muted-foreground mb-6">
+              Establezca una nueva contraseña para su cuenta.
+            </p>
+            <form onSubmit={handleReset} className="flex flex-col gap-5">
+              <div>
+                <label className="text-sm text-foreground block mb-1">Nueva contraseña</label>
+                <Input type="password" required autoFocus value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="••••••••" />
+              </div>
+              <div>
+                <label className="text-sm text-foreground block mb-1">Confirmar contraseña</label>
+                <Input type="password" required value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} placeholder="••••••••" />
+              </div>
+              {error && <div className="bg-destructive/10 text-destructive p-2 rounded text-center text-sm">{error}</div>}
+              <Button type="submit" className="gap-2"><KeyRound className="h-4 w-4" /> Cambiar contraseña</Button>
+            </form>
+          </>
         )}
 
         <div className="mt-6 text-center">
