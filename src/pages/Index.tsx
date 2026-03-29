@@ -11,6 +11,7 @@ import { Appointments } from "@/components/Appointments";
 import MastersModals from "@/components/MastersModals";
 import SettingsTabs from "@/components/SettingsTabs";
 import PatientAppointmentModule from "@/components/landing/PatientAppointmentModule";
+import DataImportExport from "@/components/DataImportExport";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -36,6 +37,8 @@ const Index = () => {
         return <DashboardContent />;
       case "config-general":
         return <SettingsTabs />;
+      case "import-export":
+        return <DataImportExport />;
       default:
         return <DashboardContent />;
     }
