@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, isRegistered, isPaid, registration } = useLabAuth();
+  const { login, isRegistered, isPaid, registration, completeRegistration } = useLabAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
