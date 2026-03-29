@@ -3,8 +3,9 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, LogIn, ShieldCheck } from "lucide-react";
+import { ArrowLeft, LogIn, ShieldCheck, Mail, KeyRound } from "lucide-react";
 import { useLabAuth } from "@/hooks/use-lab-auth";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Login() {
   const navigate = useNavigate();
